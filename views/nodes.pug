@@ -16,17 +16,8 @@ block content
 			span , 
 			a(href="/nodes?sort=channel_capacity-desc", style=(sort == "channel_capacity-desc" ? "font-weight: bold;" : false)) Most Capacity
 
-	table(class="table table-responsive-sm mb-4")
-		thead
-			tr
-				th Public Key
-				th Address
-				th Last Update
-				th Description
-		
-		tbody
-			each node, index in nodes
-				include includes/node-table-row.pug
+	include includes/node-table.pug
+
 
 	- var nodeCount = describeGraph.nodes.length;
 	if (nodeCount > limit)

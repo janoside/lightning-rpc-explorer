@@ -9,7 +9,10 @@ tr(class="monospace")
 			span ?
 
 	td
+		- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(node.last_update) * 1000))));
+
 		span #{moment.utc(new Date(parseInt(node.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")}
+		span(class="text-muted")  (#{timeAgo.humanize()})
 
 	td
 		span #{node.num_channels}

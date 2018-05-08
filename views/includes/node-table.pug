@@ -1,0 +1,12 @@
+table(class="table table-responsive-sm mb-5")
+	thead
+		tr
+			th Public Key
+			th Address
+			th Last Update
+			th Channels
+			th Description
+	
+	tbody
+		each node, index in nodes
+			include ./node-table-row.pug

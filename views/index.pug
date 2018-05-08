@@ -60,7 +60,7 @@ block content
 
 	div(class="row")
 		div(class="col")
-			h2(class="h3") Nodes
+			h2(class="h3") Latest Nodes
 				small  (1-10 of #{describeGraph.nodes.length.toLocaleString()})
 
 		div(class="col")
@@ -69,41 +69,20 @@ block content
 
 	hr
 
-	table(class="table table-responsive-sm mb-5")
-		thead
-			tr
-				th Public Key
-				th Address
-				th Last Update
-				th Channels
-				th Description
-		
-		tbody
-			each node, index in firstXNodes
-				include includes/node-table-row.pug
+	- var nodes = firstXNodes;
+	include includes/node-table.pug
 
 
 	div(class="row")
 		div(class="col")
-			h2(class="h3") Channels
+			h2(class="h3") Latest Channels
 				small  (1-10 of #{describeGraph.edges.length.toLocaleString()})
 
 		div(class="col")
 			span(style="float: right;")
-				a(href="/nodes", class="btn btn-primary") Browse Channels &raquo;
+				a(href="/channels", class="btn btn-primary") Browse Channels &raquo;
 
 	hr
 
-	table(class="table table-responsive-sm")
-		thead
-			tr
-				th ID
-				th Last Update
-				th Node 1
-				th Node 2
-				th Capacity
-		
-		tbody
-			each channel, index in firstXEdges
-				include includes/channel-table-row.pug
-	
+	- var channels = firstXEdges;
+	include includes/channel-table.pug

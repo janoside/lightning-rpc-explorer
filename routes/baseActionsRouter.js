@@ -5,28 +5,8 @@ var moment = require('moment');
 var utils = require('./../app/utils');
 var env = require("./../app/env");
 var bitcoinCore = require("bitcoin-core");
-var rpcApi = require("./../app/rpcApi");
 
 router.get("/", function(req, res) {
-	if (req.session.host == null || req.session.host.trim() == "") {
-		if (req.cookies['rpc-host']) {
-			res.locals.host = req.cookies['rpc-host'];
-		}
-
-		if (req.cookies['rpc-port']) {
-			res.locals.port = req.cookies['rpc-port'];
-		}
-
-		if (req.cookies['rpc-username']) {
-			res.locals.username = req.cookies['rpc-username'];
-		}
-
-		res.render("connect");
-		res.end();
-
-		return;
-	}
-
 	lightning.getInfo({}, function(err, response) {
 		res.locals.getInfo = response;
 
@@ -35,6 +15,14 @@ router.get("/", function(req, res) {
 
 			lightning.describeGraph({}, function(err3, response3) {
 				res.locals.describeGraph = response3;
+
+				res.locals.describeGraph.nodes.sort(function(a, b) {
+					return b.last_update - a.last_update;
+				});
+
+				res.locals.describeGraph.edges.sort(function(a, b) {
+					return b.last_update - a.last_update;
+				});
 
 				res.render("index");
 				res.end();
@@ -156,24 +144,71 @@ router.get("/nodes", function(req, res) {
 
 		res.locals.nodes.sort(function(a, b) {
 			if (sortProperty == "last_update") {
-				return a.last_update - b.last_update;
+				return b.last_update - a.last_update;
 
 			} else if (sortProperty == "num_channels") {
-				return a.num_channels - b.num_channels;
+				return b.num_channels - a.num_channels;
 
 			} else if (sortProperty == "channel_capacity") {
-				return a.channel_capacity - b.channel_capacity;
+				return b.channel_capacity - a.channel_capacity;
 
 			} else {
-				return a.last_update - b.last_update;
+				return b.last_update - a.last_update;
 			}
 		});
-
-		console.log("nc: " + res.locals.nodes.length + ", offset: " + offset);
 
 		res.locals.nodes = res.locals.nodes.slice(offset, offset + limit);
 
 		res.render("nodes");
+		res.end();
+	});
+});
+
+router.get("/channels", function(req, res) {
+	var limit = 20;
+	var offset = 0;
+	var sort = "last_update-desc";
+
+	if (req.query.limit) {
+		limit = parseInt(req.query.limit);
+	}
+
+	if (req.query.offset) {
+		offset = parseInt(req.query.offset);
+	}
+
+	if (req.query.sort) {
+		sort = req.query.sort;
+	}
+
+	res.locals.limit = limit;
+	res.locals.offset = offset;
+	res.locals.sort = sort;
+	res.locals.paginationBaseUrl = "/channels";
+
+	lightning.describeGraph({}, function(err, response) {
+		res.locals.describeGraph = response;
+
+		var sortProperty = sort.substring(0, sort.indexOf("-"));
+		var sortDirection = sort.substring(sort.indexOf("-") + 1);
+
+		res.locals.channels = response.edges;
+
+		res.locals.channels.sort(function(a, b) {
+			if (sortProperty == "last_update") {
+				return b.last_update - a.last_update;
+
+			} else if (sortProperty == "capacity") {
+				return b.capacity - a.capacity;
+
+			} else {
+				return b.last_update - a.last_update;
+			}
+		});
+
+		res.locals.channels = res.locals.channels.slice(offset, offset + limit);
+
+		res.render("channels");
 		res.end();
 	});
 });
@@ -217,173 +252,6 @@ router.post("/search", function(req, res) {
 
 			res.redirect("/");
 		});
-	});
-});
-
-router.get("/rpc-terminal", function(req, res) {
-	if (!env.debug) {
-		res.send("Debug mode is off.");
-
-		return;
-	}
-
-	res.render("terminal");
-});
-
-router.post("/rpc-terminal", function(req, res) {
-	if (!env.debug) {
-		res.send("Debug mode is off.");
-
-		return;
-	}
-
-	var params = req.body.cmd.split(" ");
-	var cmd = params.shift();
-	var parsedParams = [];
-
-	params.forEach(function(param, i) {
-		if (!isNaN(param)) {
-			parsedParams.push(parseInt(param));
-
-		} else {
-			parsedParams.push(param);
-		}
-	});
-
-	if (env.rpcBlacklist.includes(cmd)) {
-		res.write("Sorry, that RPC command is blacklisted. If this is your server, you may allow this command by removing it from the 'rpcBlacklist' setting in env.js.", function() {
-			res.end();
-		});
-
-		return;
-	}
-
-	client.command([{method:cmd, parameters:parsedParams}], function(err, result, resHeaders) {
-		console.log("Result[1]: " + JSON.stringify(result, null, 4));
-		console.log("Error[2]: " + JSON.stringify(err, null, 4));
-		console.log("Headers[3]: " + JSON.stringify(resHeaders, null, 4));
-
-		if (err) {
-			console.log(JSON.stringify(err, null, 4));
-
-			res.write(JSON.stringify(err, null, 4), function() {
-				res.end();
-			});
-
-		} else if (result) {
-			res.write(JSON.stringify(result, null, 4), function() {
-				res.end();
-			});
-
-		} else {
-			res.write(JSON.stringify({"Error":"No response from node"}, null, 4), function() {
-				res.end();
-			});
-		}
-	});
-});
-
-router.get("/rpc-browser", function(req, res) {
-	if (!env.debug) {
-		res.send("Debug mode is off.");
-
-		return;
-	}
-
-	rpcApi.getHelp().then(function(result) {
-		res.locals.gethelp = result;
-
-		if (req.query.method) {
-			res.locals.method = req.query.method;
-
-			rpcApi.getRpcMethodHelp(req.query.method.trim()).then(function(result2) {
-				res.locals.methodhelp = result2;
-
-				if (req.query.execute) {
-					var argDetails = result2.args;
-					var argValues = [];
-
-					if (req.query.args) {
-						for (var i = 0; i < req.query.args.length; i++) {
-							var argProperties = argDetails[i].properties;
-
-							for (var j = 0; j < argProperties.length; j++) {
-								if (argProperties[j] == "numeric") {
-									if (req.query.args[i] == null || req.query.args[i] == "") {
-										argValues.push(null);
-
-									} else {
-										argValues.push(parseInt(req.query.args[i]));
-									}
-
-									break;
-
-								} else if (argProperties[j] == "boolean") {
-									if (req.query.args[i]) {
-										argValues.push(req.query.args[i] == "true");
-									}
-
-									break;
-
-								} else if (argProperties[j] == "string") {
-									if (req.query.args[i]) {
-										argValues.push(req.query.args[i]);
-									}
-
-									break;
-								}
-							}
-						}
-					}
-
-					res.locals.argValues = argValues;
-
-					if (env.rpcBlacklist.includes(req.query.method)) {
-						res.locals.methodResult = "Sorry, that RPC command is blacklisted. If this is your server, you may allow this command by removing it from the 'rpcBlacklist' setting in env.js.";
-
-						res.render("browser");
-
-						return;
-					}
-
-					console.log("Executing RPC '" + req.query.method + "' with params: [" + argValues + "]");
-
-					client.command([{method:req.query.method, parameters:argValues}], function(err3, result3, resHeaders3) {
-						console.log("RPC Response: err=" + err3 + ", result=" + result3 + ", headers=" + resHeaders3);
-
-						if (err3) {
-							if (result3) {
-								res.locals.methodResult = {error:("" + err3), result:result3};
-								
-							} else {
-								res.locals.methodResult = {error:("" + err3)};
-							}
-						} else if (result3) {
-							res.locals.methodResult = result3;
-
-						} else {
-							res.locals.methodResult = {"Error":"No response from node."};
-						}
-
-						res.render("browser");
-					});
-				} else {
-					res.render("browser");
-				}
-			}).catch(function(err) {
-				res.locals.userMessage = "Error loading help content for method " + req.query.method + ": " + err;
-
-				res.render("browser");
-			});
-
-		} else {
-			res.render("browser");
-		}
-
-	}).catch(function(err) {
-		res.locals.userMessage = "Error loading help content: " + err;
-
-		res.render("browser");
 	});
 });
 

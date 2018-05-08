@@ -1,0 +1,34 @@
+extends layout
+
+block headContent
+	title Browse Channels
+	
+block content
+	h1(class="h2") Channels
+	hr
+
+	div(class="card mb-3")
+		div(class="card-body")
+			strong Sort: 
+			a(href="/channels?sort=last_update-desc", style=(sort == "last_update-desc" ? "font-weight: bold;" : false)) Last Updated
+			span , 
+			a(href="/channels?sort=capacity-desc", style=(sort == "capacity-desc" ? "font-weight: bold;" : false)) Most Capacity
+
+
+	include includes/channel-table.pug
+
+
+	- var channelCount = describeGraph.edges.length;
+	if (channelCount > limit)
+		- var pageNumber = offset / limit + 1;
+		- var pageCount = Math.floor(channelCount / limit);
+		- if (pageCount * limit < channelCount) {
+			- pageCount++;
+		- }
+		- var paginationUrlFunction = function(x) {
+			- return paginationBaseUrl + "?limit=" + limit + "&offset=" + ((x - 1) * limit + "&sort=" + sort);
+		- }
+		
+		hr
+
+		include includes/pagination.pug

@@ -1,0 +1,12 @@
+table(class="table table-responsive-sm")
+	thead
+		tr
+			th ID
+			th Last Update
+			th Node 1
+			th Node 2
+			th Capacity
+	
+	tbody
+		each channel, index in channels
+			include ./channel-table-row.pug
