@@ -1,0 +1,14 @@
+extends layout
+
+block headContent
+	title Channel Details - 
+	
+block content
+
+	h1(class="h2") Channel
+		br
+		small #{channelInfo.channel_id}
+	hr
+
+	pre
+		code #{JSON.stringify(channelInfo, null, 4)}

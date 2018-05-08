@@ -1,0 +1,14 @@
+extends layout
+
+block headContent
+	title Node Details - #{nodeInfo.node.pub_key}
+	
+block content
+
+	h1(class="h2") Node
+		br
+		small #{nodeInfo.node.pub_key}
+	hr
+
+	pre
+		code #{JSON.stringify(nodeInfo, null, 4)}

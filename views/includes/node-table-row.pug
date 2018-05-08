@@ -1,0 +1,19 @@
+tr(class="monospace")
+	td
+		a(href=("/node/" + node.pub_key), title=node.pubkey, data-toggle="tooltip") #{node.pub_key.substring(0, 20)}
+
+	td
+		if (node.addresses && node.addresses.length > 0)
+			span #{node.addresses[0].addr}
+		else
+			span ?
+
+	td
+		span #{moment.utc(new Date(parseInt(node.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")}
+
+	td
+		span #{node.num_channels}
+
+	td
+		div(style=("display: inline-block; width: 1em; height: 14px; padding: 0; margin: 0; border-radius: 0.2em; background: " + node.color))
+		span  #{node.alias}

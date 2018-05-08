@@ -1,0 +1,62 @@
+body {
+	font-size: 14px;
+	/*font: 14px 'Open Sans', "Lucida Grande", Helvetica, Arial, sans-serif;*/
+}
+
+hr {
+	margin: 5px 0 15px 0;
+}
+
+img.header-image {
+	margin-top: -10px;
+	margin-bottom: -5px;
+	width: 30px;
+	height: 30px;
+	margin-right: 10px;
+}
+
+code, .monospace {
+	font-family: "Cousine", monospace;
+}
+
+.properties-header {
+	width: 190px;
+	text-align: right;
+}
+
+.word-wrap {
+	word-wrap: break-word;
+	word-break: break-all;
+}
+
+.tag {
+	border-radius: 4px;
+	background-color: #0275d8;
+	color: white;
+	padding: 2px 5px;
+	margin-right: 4px;
+}
+
+#subheader a {
+	margin-right: 20px;
+}
+
+.table th {
+	border-top: none;
+}
+
+@media (min-width: 1920px) {
+	.container {
+		max-width: 1800px;
+	}
+}
+
+.circle-icon {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	text-align: center;
+	line-height: 100px;
+	vertical-align: middle;
+	padding: 30px;
+}

@@ -1,0 +1,14 @@
+tr(class="monospace")
+	td
+		a(href=("/channel/" + channel.channel_id)) #{channel.channel_id}
+
+	td
+		span #{moment.utc(new Date(parseInt(channel.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")}
+
+	td
+		a(href=("/node/" + channel.node1_pub)) #{channel.node1_pub.substring(0, 20)}
+
+	td
+		a(href=("/node/" + channel.node2_pub)) #{channel.node2_pub.substring(0, 20)}
+
+	td #{channel.capacity}

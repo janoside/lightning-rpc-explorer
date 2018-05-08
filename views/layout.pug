@@ -1,0 +1,124 @@
+doctype html
+html
+	head
+		meta(charset="utf-8")
+		meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, shrink-to-fit=no")
+		
+		link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css", integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4", crossorigin="anonymous")
+		link(rel="stylesheet", href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css")
+		link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Lato|Open+Sans|Cousine")
+		link(rel="stylesheet", href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css")
+		link(rel='stylesheet', href='/css/styling.css')
+
+		link(rel="icon", type="image/svg", sizes="16x16,32x32,96x96", href="/img/logo/lnd-rpc-explorer.svg?v=1")
+
+		block headContent
+			title LND RPC Explorer
+		
+	body
+		nav(class="navbar navbar-expand-lg navbar-dark bg-dark mb-4")
+			div(class="container")
+				a(class="navbar-brand", href="/")
+					img(src="/img/logo/lnd-rpc-explorer.svg", class="header-image")
+					span LND RPC Explorer
+						
+				button(type="button", class="navbar-toggler navbar-toggler-right", data-toggle="collapse", data-target="#navbarNav")
+					span(class="navbar-toggler-icon")
+					
+				div(class="collapse navbar-collapse", id="navbarNav")
+					if (client)
+						ul(class="navbar-nav mr-auto")
+							li(class="nav-item")
+								a(href="/node-details", class="nav-link")
+									i(class="fas fa-info-circle")
+									span  Node Details
+							if (false)
+								li(class="nav-item dropdown")
+									a(class="nav-link dropdown-toggle", href="javascript:void(0)", id="navbarDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") 
+										i(class="fas fa-cog")
+										span  Settings
+									div(class="dropdown-menu", aria-labelledby="navbarDropdown")
+										if (coinConfig.currencyUnits)
+											span(class="dropdown-header") Currency Units
+											each item in coinConfig.currencyUnits
+												a(class="dropdown-item", href=("/changeSetting?name=currencyFormatType&value=" + item.values[0]))
+													each valueName in item.values
+														if (currencyFormatType == valueName)
+															i(class="fas fa-check")
+													span  #{item.name}
+
+						form(method="post", action="/search", class="form-inline")
+							div(class="input-group")
+								input(type="text", class="form-control form-control-sm", name="query", placeholder="public key, address, alias, channel id", value=(query), style="width: 350px;")
+								span(class="input-group-btn")
+									input(type="submit", class="btn btn-primary", value="Search")
+
+		if (false)
+			div(class="container mb-4", style="margin-top: -1.0rem;")
+				ul(class="nav")
+					li(class="nav-item")
+						a(href="/rpc-browser", class="nav-link") RPC Browser
+					li(class="nav-item")
+						a(href="/rpc-terminal", class="nav-link") RPC Terminal
+
+				hr
+				
+		div(class="container")
+			if (userMessage)
+				div(class="alert", class=(userMessageType ? ("alert-"  + userMessageType) : "alert-info"), role="alert")
+					span !{userMessage}
+			
+			block content
+
+			div(style="margin-bottom: 30px;")
+
+			footer(class="pt-4 my-md-5 pt-md-5 border-top")
+				ul
+					li MIT-licensed source code available on github: 
+						a(href="https://github.com/janoside/lnd-rpc-explorer") janoside/lnd-rpc-explorer
+						if (sourcecodeVersion)
+							span  (@
+							a(href=("https://github.com/janoside/lnd-rpc-explorer/commit/" + sourcecodeVersion)) #{sourcecodeVersion}
+							span )
+
+					li Public instance maintained at 
+						a(href="https://lnd-explorer.chaintools.io") https://lnd-explorer.chaintools.io
+					
+					li Donate
+						ul
+							li
+								a(href="bitcoin:3NPGpNyLLmVKCEcuipBs7G4KpQJoJXjDGe") BTC
+								span  - 3NPGpNyLLmVKCEcuipBs7G4KpQJoJXjDGe
+							li
+								a(href="litecoin:ME4pXiXuWfEi1ANBDo9irUJVcZBhsTx14i") LTC
+								span  - ME4pXiXuWfEi1ANBDo9irUJVcZBhsTx14i
+								
+
+					li &copy; 2018 
+						a(href="https://danjanosik.com") Dan Janosik
+				
+		if (env.showForkBanner)
+			div(class="d-none d-md-block")
+				a(href="https://github.com/janoside/btc-rpc-explorer")
+					img(style="position: absolute; top: 0; left: 0; border: 0;", src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67", alt="Fork me on GitHub", data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png")
+		
+		script(src="https://code.jquery.com/jquery-3.3.1.min.js", integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=", crossorigin="anonymous")
+		script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js", integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ", crossorigin="anonymous")
+		script(src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js", integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb", crossorigin="anonymous")
+		script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js", integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm", crossorigin="anonymous")
+		script(defer, src="https://use.fontawesome.com/releases/v5.0.10/js/all.js", integrity="sha384-slN8GvtUJGnv6ca26v8EzVaR9DC58QEwsIk9q1QXdCU8Yu8ck/tL/5szYlBbqmS+", crossorigin="anonymous")
+
+		script(src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js")
+		
+		script(src="https://cdn.ravenjs.com/3.22.4/raven.min.js", crossorigin="anonymous")
+		script.
+			Raven.config('https://0bf20e8357a748cab8aa9d35c0f790dd@sentry.io/130800').install();
+			
+			$(document).ready(function() {
+				$('[data-toggle="tooltip"]').tooltip();
+				$('[data-toggle="popover"]').popover({html:true});
+			});
+
+			hljs.initHighlightingOnLoad();
+		
+		block endOfBody

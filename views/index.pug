@@ -1,0 +1,109 @@
+extends layout
+
+block headContent
+	title LND RPC Explorer
+	
+block content
+	h1(class="h2") LND RPC Explorer
+	hr
+
+	p(class="lead mb-4")
+		a(href="https://github.com/janoside/lnd-rpc-explorer") LND RPC Explorer
+		span  is open-source. If you run your own 
+		a(href="https://lightning.network") LND Node
+		span ,
+		strong  LND RPC Explorer
+		span  can easily run alongside it, communicating via RPC calls. See the 
+		a(href="https://github.com/janoside/lnd-rpc-explorer") project description
+		span  for a list of features and instructions for running.
+
+	if (false)
+		pre
+			code #{JSON.stringify(getInfo, null, 4)}
+
+		pre
+			code #{JSON.stringify(listPeers, null, 4)}
+
+	- var totalCapacity = 0;
+	each item in describeGraph.edges
+		- totalCapacity = totalCapacity + parseInt(item.capacity);
+
+	
+	- var firstXNodes = describeGraph.nodes.slice(0, 10);
+	- var firstXEdges = describeGraph.edges.slice(0, 10);
+
+	h2(class="h3") Network Summary
+	hr
+
+	div(class="row mb-5")
+		div(class="col-md-4")
+			div(class="card")
+				div(class="card-header")
+					span(class="h5") Nodes
+				div(class="card-body")
+					span(class="lead") #{describeGraph.nodes.length.toLocaleString()}
+
+		div(class="col-md-4")
+			div(class="card")
+				div(class="card-header")
+					span(class="h5") Channels
+				div(class="card-body")
+					span(class="lead") #{describeGraph.edges.length.toLocaleString()}
+
+		div(class="col-md-4")
+			div(class="card")
+				div(class="card-header")
+					span(class="h5") Capacity
+				div(class="card-body")
+					span(class="lead") #{totalCapacity.toLocaleString()}
+
+
+	div(class="row")
+		div(class="col")
+			h2(class="h3") Nodes
+				small  (1-10 of #{describeGraph.nodes.length.toLocaleString()})
+
+		div(class="col")
+			span(style="float: right;")
+				a(href="/nodes", class="btn btn-primary") Browse Nodes &raquo;
+
+	hr
+
+	table(class="table table-responsive-sm mb-5")
+		thead
+			tr
+				th Public Key
+				th Address
+				th Last Update
+				th Channels
+				th Description
+		
+		tbody
+			each node, index in firstXNodes
+				include includes/node-table-row.pug
+
+
+	div(class="row")
+		div(class="col")
+			h2(class="h3") Channels
+				small  (1-10 of #{describeGraph.edges.length.toLocaleString()})
+
+		div(class="col")
+			span(style="float: right;")
+				a(href="/nodes", class="btn btn-primary") Browse Channels &raquo;
+
+	hr
+
+	table(class="table table-responsive-sm")
+		thead
+			tr
+				th ID
+				th Last Update
+				th Node 1
+				th Node 2
+				th Capacity
+		
+		tbody
+			each channel, index in firstXEdges
+				include includes/channel-table-row.pug
+	

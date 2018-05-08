@@ -1,0 +1,44 @@
+extends layout
+
+block headContent
+	title Browse Nodes
+	
+block content
+	h1(class="h2") Nodes
+	hr
+
+	div(class="card mb-3")
+		div(class="card-body")
+			strong Sort: 
+			a(href="/nodes?sort=last_update-desc", style=(sort == "last_update-desc" ? "font-weight: bold;" : false)) Last Updated
+			span , 
+			a(href="/nodes?sort=num_channels-desc", style=(sort == "num_channels-desc" ? "font-weight: bold;" : false)) Most Channels
+			span , 
+			a(href="/nodes?sort=channel_capacity-desc", style=(sort == "channel_capacity-desc" ? "font-weight: bold;" : false)) Most Capacity
+
+	table(class="table table-responsive-sm mb-4")
+		thead
+			tr
+				th Public Key
+				th Address
+				th Last Update
+				th Description
+		
+		tbody
+			each node, index in nodes
+				include includes/node-table-row.pug
+
+	- var nodeCount = describeGraph.nodes.length;
+	if (nodeCount > limit)
+		- var pageNumber = offset / limit + 1;
+		- var pageCount = Math.floor(nodeCount / limit);
+		- if (pageCount * limit < nodeCount) {
+			- pageCount++;
+		- }
+		- var paginationUrlFunction = function(x) {
+			- return paginationBaseUrl + "?limit=" + limit + "&offset=" + ((x - 1) * limit + "&sort=" + sort);
+		- }
+		
+		hr
+
+		include includes/pagination.pug
