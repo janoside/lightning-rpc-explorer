@@ -34,15 +34,34 @@ router.get("/", function(req, res) {
 router.get("/node/:nodePubKey", function(req, res) {
 	var nodePubKey = req.params.nodePubKey;
 
-	lightning.getNodeInfo({pub_key:nodePubKey}, function(err, response) {
+	lightning.describeGraph({}, function(err, response) {
 		if (err) {
-			console.log("Error qu3gfewewb0: " + err);
+			console.log("Error u3r03gwfewf: " + err);
 		}
 
-		res.locals.nodeInfo = response;
+		res.locals.describeGraph = response;
 
-		res.render("node");
-		res.end();
+		res.locals.nodeChannels = [];
+		res.locals.describeGraph.edges.forEach(function(channel) {
+			if (channel.node1_pub == nodePubKey || channel.node2_pub == nodePubKey) {
+				res.locals.nodeChannels.push(channel);
+			}
+		});
+
+		res.locals.nodeChannels.sort(function(a, b) {
+			return b.last_update - a.last_update;
+		});
+
+		lightning.getNodeInfo({pub_key:nodePubKey}, function(err2, response2) {
+			if (err2) {
+				console.log("Error qu3gfewewb0: " + err2);
+			}
+
+			res.locals.nodeInfo = response2;
+
+			res.render("node");
+			res.end();
+		});
 	});
 });
 
@@ -54,10 +73,30 @@ router.get("/channel/:channelId", function(req, res) {
 			console.log("Error 923uhf2fgeu: " + err);
 		}
 
-		res.locals.channelInfo = response;
+		res.locals.channel = response;
 
-		res.render("channel");
-		res.end();
+		lightning.getNodeInfo({pub_key:response.node1_pub}, function(err2, response2) {
+			if (err2) {
+				console.log("Error uq3efbweyfge: " + err2);
+			}
+
+			if (response2) {
+				res.locals.node1 = response2;
+			}
+
+			lightning.getNodeInfo({pub_key:response.node2_pub}, function(err3, response3) {
+				if (err3) {
+					console.log("Error ousdhf0ewg: " + err3);
+				}
+
+				if (response3) {
+					res.locals.node2 = response3;
+				}
+
+				res.render("channel");
+				res.end();
+			});
+		});
 	});
 });
 
@@ -199,8 +238,14 @@ router.get("/channels", function(req, res) {
 				return b.last_update - a.last_update;
 
 			} else if (sortProperty == "capacity") {
-				return b.capacity - a.capacity;
+				var diff = b.capacity - a.capacity;
 
+				if (diff == 0) {
+					return b.last_update - a.last_update;
+
+				} else {
+					return diff;
+				}
 			} else {
 				return b.last_update - a.last_update;
 			}

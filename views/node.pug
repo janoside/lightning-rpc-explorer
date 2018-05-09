@@ -10,5 +10,43 @@ block content
 		small #{nodeInfo.node.pub_key}
 	hr
 
-	pre
-		code #{JSON.stringify(nodeInfo, null, 4)}
+	ul(class='nav nav-tabs mb-3')
+		li(class="nav-item")
+			a(data-toggle="tab", href="#tab-summary", class="nav-link active", role="tab") Summary
+		li(class="nav-item")
+			a(data-toggle="tab", href="#tab-raw", class="nav-link", role="tab") Raw
+
+	div(class="tab-content")
+		div(id="tab-summary", class="tab-pane active", role="tabpanel")
+			table(class="table")
+				tr
+					th(class="table-active properties-header") Last Update
+
+					- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(nodeInfo.node.last_update) * 1000))));
+
+					td(class="monospace")
+						span #{moment.utc(new Date(parseInt(nodeInfo.node.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")}
+						span(class="text-muted")  (#{timeAgo.humanize()})
+
+				tr
+					th(class="table-active properties-header") Channel Count
+					td(class="monospace") #{parseInt(nodeInfo.num_channels).toLocaleString()}
+
+				tr
+					th(class="table-active properties-header") Total Capacity
+					td(class="monospace") #{parseInt(nodeInfo.total_capacity).toLocaleString()}
+
+			div(class="card")
+				div(class="card-header")
+					span(class="h6") Channels (#{parseInt(nodeInfo.num_channels).toLocaleString()})
+				div(class="card-body")
+					- var channels = nodeChannels;
+					include includes/channel-table.pug
+
+
+		div(id="tab-raw", class="tab-pane", role="tabpanel")
+			pre
+				code #{JSON.stringify(nodeInfo, null, 4)}
+
+			pre
+				code #{JSON.stringify(nodeChannels, null, 4)}

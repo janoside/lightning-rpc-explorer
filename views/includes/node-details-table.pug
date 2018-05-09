@@ -1,0 +1,15 @@
+table(class="table table-responsive-sm")
+	thead
+		tr
+			if (showTableNumbers)
+				th
+			th Public Key
+			th Address
+			th Last Update
+			th Channels
+			th Total Capacity
+			th Description
+	
+	tbody
+		each node, index in nodes
+			include ./node-details-table-row.pug

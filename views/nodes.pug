@@ -9,12 +9,12 @@ block content
 
 	div(class="card mb-3")
 		div(class="card-body")
-			strong Sort: 
+			strong Sort By: 
 			a(href="/nodes?sort=last_update-desc", style=(sort == "last_update-desc" ? "font-weight: bold;" : false)) Last Updated
 			span , 
-			a(href="/nodes?sort=num_channels-desc", style=(sort == "num_channels-desc" ? "font-weight: bold;" : false)) Most Channels
+			a(href="/nodes?sort=num_channels-desc", style=(sort == "num_channels-desc" ? "font-weight: bold;" : false)) Channel Count
 			span , 
-			a(href="/nodes?sort=channel_capacity-desc", style=(sort == "channel_capacity-desc" ? "font-weight: bold;" : false)) Most Capacity
+			a(href="/nodes?sort=channel_capacity-desc", style=(sort == "channel_capacity-desc" ? "font-weight: bold;" : false)) Capacity
 
 	include includes/node-table.pug
 

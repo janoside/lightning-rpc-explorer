@@ -1,0 +1,29 @@
+tr(class="monospace")
+	if (showTableNumbers)
+		th #{(index + 1).toLocaleString()}
+
+	td
+		a(href=("/node/" + node.node.pub_key), title=node.node.pubkey, data-toggle="tooltip") #{node.node.pub_key.substring(0, 20)}
+
+	td
+		if (node.node.addresses && node.node.addresses.length > 0)
+			span #{node.node.addresses[0].addr}
+		else
+			span ?
+
+	td
+		- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(node.node.last_update) * 1000))));
+
+		//span #{moment.utc(new Date(parseInt(node.node.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")}
+		span #{timeAgo.humanize()}
+
+	td
+		span #{parseInt(node.num_channels).toLocaleString()}
+
+	td
+		if (node.total_capacity)
+			span #{parseInt(node.total_capacity).toLocaleString()}
+
+	td
+		div(style=("display: inline-block; width: 1em; height: 14px; padding: 0; margin: 0; border-radius: 0.2em; background: " + node.node.color))
+		span  #{node.node.alias}
