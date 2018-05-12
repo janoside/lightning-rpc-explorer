@@ -21,6 +21,7 @@ var pug = require("pug");
 var momentDurationFormat = require("moment-duration-format");
 var coins = require("./app/coins.js");
 var request = require("request");
+var qrcode = require("qrcode");
 
 
 var baseActionsRouter = require('./routes/baseActionsRouter');
@@ -55,7 +56,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 function refreshExchangeRate() {
 	if (coins[env.coin].exchangeRateData) {
 		request(coins[env.coin].exchangeRateData.jsonUrl, function(error, response, body) {
-			if (!error && response.statusCode == 200) {
+			if (!error && response && response.statusCode && response.statusCode == 200) {
 				var responseBody = JSON.parse(body);
 
 				var exchangeRate = coins[env.coin].exchangeRateData.responseBodySelectorFunction(responseBody);
@@ -69,7 +70,10 @@ function refreshExchangeRate() {
 					console.log("Unable to get exchange rate data");
 				}
 			} else {
-				console.log("Error " + response.statusCode)
+				console.log("Error:");
+				console.log(error);
+				console.log("Response:");
+				console.log(response);
 			}
 		});
 	}
@@ -80,8 +84,31 @@ function refreshExchangeRate() {
 app.runOnStartup = function() {
 	global.env = env;
 	global.coinConfig = coins[env.coin];
+	global.coinConfigs = coins;
 
 	connectViaRpc();
+
+
+	if (env.donationAddresses) {
+		var getDonationAddressQrCode = function(coinId) {
+			qrcode.toDataURL(env.donationAddresses[coinId].address, function(err, url) {
+				global.donationAddressQrCodeUrls[coinId] = url;
+			});
+		};
+
+		global.donationAddressQrCodeUrls = {};
+
+		env.donationAddresses.coins.forEach(function(item) {
+			getDonationAddressQrCode(item);
+		});
+	}
+
+	if (global.sourcecodeVersion == null) {
+		simpleGit(".").log(["-n 1"], function(err, log) {
+			global.sourcecodeVersion = log.all[0].hash.substring(0, 10);
+			global.sourcecodeDate = log.all[0].date.substring(0, "0000-00-00".length);
+		});
+	}
 
 
 	if (global.exchangeRate == null) {
@@ -141,13 +168,11 @@ function connectViaRpc() {
 }
 
 
-app.locals.sourcecodeVersion = null;
 
 app.use(function(req, res, next) {
 	// make session available in templates
 	res.locals.session = req.session;
-	res.locals.debug = env.debug;
-
+	
 	if (env.rpc) {
 		req.session.host = env.rpc.host;
 		req.session.port = env.rpc.port;
@@ -189,12 +214,6 @@ app.use(function(req, res, next) {
 			return;
 		}
 	}
-
-	if (!req.session.sourcecodeVersion) {
-		simpleGit(".").log(["-n 1"], function(err, log) {
-			app.locals.sourcecodeVersion = log.all[0].hash.substring(0, 10);
-		});
-	}
 	
 	if (req.session.userMessage) {
 		res.locals.userMessage = req.session.userMessage;
@@ -203,7 +222,7 @@ app.use(function(req, res, next) {
 			res.locals.userMessageType = req.session.userMessageType;
 			
 		} else {
-			res.locals.userMessageType = "info";
+			res.locals.userMessageType = "warning";
 		}
 
 		req.session.userMessage = null;

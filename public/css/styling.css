@@ -1,5 +1,6 @@
 body {
 	font-size: 14px;
+	font-family: "Ubuntu", sans-serif;
 	/*font: 14px 'Open Sans', "Lucida Grande", Helvetica, Arial, sans-serif;*/
 }
 
@@ -45,18 +46,30 @@ code, .monospace {
 	border-top: none;
 }
 
+#sub-menu a:hover {
+	text-decoration: underline;
+}
+
+strong {
+	font-weight: 500;
+}
+
 @media (min-width: 1920px) {
 	.container {
 		max-width: 1800px;
 	}
 }
 
-.circle-icon {
-	width: 100px;
-	height: 100px;
-	border-radius: 50%;
-	text-align: center;
-	line-height: 100px;
-	vertical-align: middle;
-	padding: 30px;
+footer {
+	border-top: solid 5px #597FA5;
+	border-bottom: solid 5px #597FA5;
+}
+
+footer a {
+	color: #ccc;
+	text-decoration: underline;
+}
+
+footer a:hover {
+	color: white;
 }

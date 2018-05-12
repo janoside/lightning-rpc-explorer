@@ -1,21 +1,32 @@
 extends layout
 
 block headContent
-	title LND RPC Explorer
+	title Lightning Explorer
 	
 block content
-	h1(class="h2") LND RPC Explorer
+	h1(class="h2") Lightning Explorer
 	hr
 
-	p(class="lead mb-4")
-		a(href="https://github.com/janoside/lnd-rpc-explorer") LND RPC Explorer
-		span  is open-source. If you run your own 
-		a(href="https://lightning.network") LND Node
-		span ,
-		strong  LND RPC Explorer
-		span  can easily run alongside it, communicating via RPC calls. See the 
-		a(href="https://github.com/janoside/lnd-rpc-explorer") project description
-		span  for a list of features and instructions for running.
+	if (env.demoSite)
+		div(class="alert alert-primary", role="alert")
+			p(class="lead")
+				strong Lightning Explorer
+				span  is 
+				a(href="https://github.com/janoside/lightning-rpc-explorer") open-source
+				span . If you run your own lightning node,
+				strong  Lightning Explorer
+				span  can easily run alongside it, communicating via RPC calls.
+			
+			p(class="lead")
+				span See the 
+				a(href="https://github.com/janoside/lightning-rpc-explorer") project description
+				span  for a list of features and instructions for running.
+
+			div
+				a(class="github-button", href="https://github.com/janoside/lightning-rpc-explorer", data-icon="octicon-star", data-size="large", data-show-count="true", aria-label="Star janoside/btc-rpc-explorer on GitHub", style="padding-right: 10px;") Star
+				
+				span    
+				a(class="github-button", href="https://github.com/janoside/lightning-rpc-explorer/fork", data-icon="octicon-repo-forked", data-size="large", data-show-count="true", aria-label="Fork janoside/btc-rpc-explorer on GitHub") Fork
 
 	if (false)
 		pre
