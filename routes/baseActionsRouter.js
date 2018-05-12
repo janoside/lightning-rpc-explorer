@@ -100,7 +100,7 @@ router.get("/channel/:channelId", function(req, res) {
 	});
 });
 
-router.get("/node-details", function(req, res) {
+router.get("/node-status", function(req, res) {
 	lightning.getInfo({}, function(err, response) {
 		res.locals.getInfo = response;
 
@@ -110,7 +110,7 @@ router.get("/node-details", function(req, res) {
 			lightning.describeGraph({}, function(err3, response3) {
 				res.locals.describeGraph = response3;
 
-				res.render("node-details");
+				res.render("node-status");
 				res.end();
 			});
 		});
@@ -298,6 +298,10 @@ router.post("/search", function(req, res) {
 			res.redirect("/");
 		});
 	});
+});
+
+router.get("/about", function(req, res) {
+	res.render("about");
 });
 
 module.exports = router;
