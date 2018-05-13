@@ -1,25 +1,17 @@
-# BTC Explorer
+# Lightning RPC Explorer
 
-Simple, database-free Bitcoin blockchain explorer, via RPC. Built with Node.js, express, bootstrap-v4.
+Simple, database-free Lightning network explorer, via RPC. Built with Node.js, express, bootstrap-v4.
 
-This tool is intended to be a simple, self-hosted explorer for the Bitcoin blockchain, driven by RPC calls to your own bitcoind node. This tool is easy to run but lacks features compared to full-fledged (database-backed) explorers.
+This tool is intended to be a simple, self-hosted explorer for the Lightning network, driven by RPC calls to your own lightning node.
 
-I built this tool because I wanted to use it myself. Whatever reasons one might have for running a full node (trustlessness, technical curiosity, etc) it's helpful to appreciate the "fullness" of a node. With this explorer, one can not only explore the blockchain (in the traditional sense of the term "explorer"), but also explore the capabilities of one's own node.
-
-A live demo of the tool is available at https://btc-explorer.com
+A live demo of the tool is available at https://lightning.chaintools.io
 
 # Features
 
-* List of recent blocks
-* Browse blocks by height, in ascending or descending order
-* View block details
-* View transaction details, with navigation "backward" via spent transaction outputs
-* View raw JSON output used to generate most pages
-* Search to directly navigate to transactions or blocks
-* Mempool summary, showing unconfirmed transaction counts by fee level
-* RPC Browser to explore all of the RPC commands available from your node
-* RPC Terminal to send commands to your node
-* Currently supports BTC, LTC (support for any Bitcoin-RPC-protocol-compliant coin can be added easily)
+* Network summary
+* Browse nodes and channels, sorted by last update or capacity
+* View node and channel details
+* Search by node or channel
 
 # Getting started
 
