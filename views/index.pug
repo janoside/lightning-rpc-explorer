@@ -22,11 +22,11 @@ block content
 				a(href="https://github.com/janoside/lightning-rpc-explorer") project description
 				span  for a list of features and instructions for running.
 
-			div
-				a(class="github-button", href="https://github.com/janoside/lightning-rpc-explorer", data-icon="octicon-star", data-size="large", data-show-count="true", aria-label="Star janoside/btc-rpc-explorer on GitHub", style="padding-right: 10px;") Star
+			div(style="height: 34px;")
+				a(class="github-button", href=env.siteInfo.sourceUrl, data-icon="octicon-star", data-size="large", data-show-count="true", aria-label="Star janoside/btc-rpc-explorer on GitHub", style="padding-right: 10px;") Star
 				
 				span    
-				a(class="github-button", href="https://github.com/janoside/lightning-rpc-explorer/fork", data-icon="octicon-repo-forked", data-size="large", data-show-count="true", aria-label="Fork janoside/btc-rpc-explorer on GitHub") Fork
+				a(class="github-button", href=(env.siteInfo.sourceUrl + "/fork"), data-icon="octicon-repo-forked", data-size="large", data-show-count="true", aria-label="Fork janoside/btc-rpc-explorer on GitHub") Fork
 
 	if (false)
 		pre
@@ -97,3 +97,6 @@ block content
 
 	- var channels = firstXEdges;
 	include includes/channel-table.pug
+
+block endOfBody
+	script(async, defer, src="https://buttons.github.io/buttons.js")
