@@ -47,10 +47,11 @@ html
 													span  #{item.name}
 
 						form(method="post", action="/search", class="form-inline")
-							div(class="input-group")
-								input(type="text", class="form-control form-control-sm", name="query", placeholder="public key, address, alias, channel id", value=(query), style="width: 350px;")
-								span(class="input-group-btn")
-									input(type="submit", class="btn btn-primary", value="Search")
+							div(class="input-group input-group-sm")
+								input(type="text", class="form-control form-control-sm", name="query", placeholder="pub key, channel id", value=(query), style="width: 300px;")
+								div(class="input-group-append")
+									button(type="submit", class="btn btn-primary")
+										i(class="fas fa-search")
 
 		if (true)
 			div(class="container mb-4", style="margin-top: -1.0rem;")
