@@ -1,6 +1,6 @@
 # Lightning RPC Explorer
 
-Simple, database-free Lightning network explorer, via RPC. Built with Node.js, express, bootstrap-v4.
+Simple, database-free Lightning network explorer, via gRPC. Built with Node.js, express, bootstrap-v4.
 
 This tool is intended to be a simple, self-hosted explorer for the Lightning network, driven by RPC calls to your own lightning node.
 
@@ -15,22 +15,19 @@ A live demo of the tool is available at https://lightning.chaintools.io
 
 # Getting started
 
-The below instructions are geared toward BTC, but can be adapted easily to other coins.
-
 ## Prerequisites
 
 1. Install and run a full, archiving node - [instructions](https://bitcoin.org/en/full-node). Ensure that your node has full transaction indexing enabled (`txindex=1`) and the RPC server enabled (`server=1`).
 2. Synchronize your node with the Bitcoin network.
+3. [Install LND](https://github.com/lightningnetwork/lnd/blob/master/docs/INSTALL.md)
 
 ## Instructions
 
 1. Clone this repo
 2. `npm install` to install all required dependencies
-3. Optional: Uncomment the "bitcoind" section in [env.js](app/env.js) to automatically connect to the target node.
-4. Optional: Change the "coin" value in [env.js](app/env.js). Currently supported values are "BTC" and "LTC".
-5. `npm start` to start the local server
-6. Navigate to http://127.0.0.1:3002/
-7. Connect using the RPC credentials for your target bitcoin node (if you didn't edit [env.js](app/env.js) in Step 3)
+3. Optional: Modify the "rpc" section in [env.js](app/env.js) to use non-default settings if needed.
+4. `npm start` to start the local server
+5. Navigate to http://127.0.0.1:3004/
 
 # Screenshots
 
