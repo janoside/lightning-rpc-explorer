@@ -5,29 +5,13 @@ var moment = require('moment');
 var utils = require('./../app/utils');
 var env = require("./../app/env");
 var bitcoinCore = require("bitcoin-core");
+var rpcApi = require("./../app/rpcApi.js");
 
 router.get("/", function(req, res) {
-	lightning.getInfo({}, function(err, response) {
-		res.locals.getInfo = response;
+	rpcApi.getFullNetworkDescription().then(function(fnd) {
+		res.locals.fullNetworkDescription = fnd;
 
-		lightning.listPeers({}, function(err2, response2) {
-			res.locals.listPeers = response2;
-
-			lightning.describeGraph({}, function(err3, response3) {
-				res.locals.describeGraph = response3;
-
-				res.locals.describeGraph.nodes.sort(function(a, b) {
-					return b.last_update - a.last_update;
-				});
-
-				res.locals.describeGraph.edges.sort(function(a, b) {
-					return b.last_update - a.last_update;
-				});
-
-				res.render("index");
-				res.end();
-			});
-		});
+		res.render("index");
 	});
 });
 
@@ -149,57 +133,28 @@ router.get("/nodes", function(req, res) {
 	res.locals.sort = sort;
 	res.locals.paginationBaseUrl = "/nodes";
 
-	lightning.describeGraph({}, function(err, response) {
-		res.locals.describeGraph = response;
+	var sortProperty = sort.substring(0, sort.indexOf("-"));
+	var sortDirection = sort.substring(sort.indexOf("-") + 1);
 
-		var sortProperty = sort.substring(0, sort.indexOf("-"));
-		var sortDirection = sort.substring(sort.indexOf("-") + 1);
+	rpcApi.getFullNetworkDescription().then(function(fnd) {
+		res.locals.fullNetworkDescription = fnd;
 
-		res.locals.nodes = response.nodes;
-		res.locals.nodesByPubKey = {};
+		if (sortProperty == "last_update") {
+			res.locals.nodeInfos = fnd.nodes.sortedByLastUpdate;
 
-		res.locals.nodes.forEach(function(node) {
-			node.channel_count = 0;
-			node.sum_channel_capacity = 0;
+		} else if (sortProperty == "num_channels") {
+			res.locals.nodeInfos = fnd.nodes.sortedByChannelCount;
 
-			res.locals.nodesByPubKey[node.pub_key] = node;
-		});
+		} else if (sortProperty == "channel_capacity") {
+			res.locals.nodeInfos = fnd.nodes.sortedByTotalCapacity;
 
-		response.edges.forEach(function(channel) {
-			res.locals.nodesByPubKey[channel.node1_pub].channel_count++;
-			res.locals.nodesByPubKey[channel.node2_pub].channel_count++;
+		} else {
+			res.locals.nodeInfos = fnd.nodes.sortedByLastUpdate;
+		}
 
-			res.locals.nodesByPubKey[channel.node1_pub].sum_channel_capacity += channel.capacity;
-			res.locals.nodesByPubKey[channel.node2_pub].sum_channel_capacity += channel.capacity;
-
-			if (channel.node1_pub == "03fde1d50cbe9f577170bf746fa0c2451ab22ad4bb2a535eca73424a4b07e02d58") {
-				console.log("n1");
-			}
-
-			if (channel.node2_pub == "03fde1d50cbe9f577170bf746fa0c2451ab22ad4bb2a535eca73424a4b07e02d58") {
-				console.log("n2");
-			}
-		});
-
-		res.locals.nodes.sort(function(a, b) {
-			if (sortProperty == "last_update") {
-				return b.last_update - a.last_update;
-
-			} else if (sortProperty == "num_channels") {
-				return b.num_channels - a.num_channels;
-
-			} else if (sortProperty == "channel_capacity") {
-				return b.channel_capacity - a.channel_capacity;
-
-			} else {
-				return b.last_update - a.last_update;
-			}
-		});
-
-		res.locals.nodes = res.locals.nodes.slice(offset, offset + limit);
+		res.locals.nodeInfos = res.locals.nodeInfos.slice(offset, offset + limit);
 
 		res.render("nodes");
-		res.end();
 	});
 });
 

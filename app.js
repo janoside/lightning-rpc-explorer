@@ -22,6 +22,7 @@ var momentDurationFormat = require("moment-duration-format");
 var coins = require("./app/coins.js");
 var request = require("request");
 var qrcode = require("qrcode");
+var rpcApi = require("./app/rpcApi.js");
 
 
 var baseActionsRouter = require('./routes/baseActionsRouter');
@@ -86,9 +87,6 @@ app.runOnStartup = function() {
 	global.coinConfig = coins[env.coin];
 	global.coinConfigs = coins;
 
-	connectViaRpc();
-
-
 	if (env.donationAddresses) {
 		var getDonationAddressQrCode = function(coinId) {
 			qrcode.toDataURL(env.donationAddresses[coinId].address, function(err, url) {
@@ -117,54 +115,66 @@ app.runOnStartup = function() {
 
 	// refresh exchange rate periodically
 	setInterval(refreshExchangeRate, 1800000);
+
+	// connect and pull down the current network description
+	connectViaRpc().then(function() {
+		rpcApi.refreshFullNetworkDescription();
+
+		// refresh network description periodically
+		setInterval(rpcApi.refreshFullNetworkDescription, 60000);
+	});
 };
 
 function connectViaRpc() {
-	// Ref: https://github.com/lightningnetwork/lnd/blob/master/docs/grpc/javascript.md
+	return new Promise(function(resolve, reject) {
+		// Ref: https://github.com/lightningnetwork/lnd/blob/master/docs/grpc/javascript.md
 
-	// Due to updated ECDSA generated tls.cert we need to let gprc know that
-	// we need to use that cipher suite otherwise there will be a handhsake
-	// error when we communicate with the lnd rpc server.
-	process.env.GRPC_SSL_CIPHER_SUITES = 'HIGH+ECDSA';
+		// Due to updated ECDSA generated tls.cert we need to let gprc know that
+		// we need to use that cipher suite otherwise there will be a handhsake
+		// error when we communicate with the lnd rpc server.
+		process.env.GRPC_SSL_CIPHER_SUITES = 'HIGH+ECDSA';
 
-	// Lnd admin macaroon is at ~/.lnd/admin.macaroon on Linux and
-	// ~/Library/Application Support/Lnd/admin.macaroon on Mac
-	var m = fs.readFileSync(env.rpc.adminMacaroonFilepath);
-	var macaroon = m.toString('hex');
+		// Lnd admin macaroon is at ~/.lnd/admin.macaroon on Linux and
+		// ~/Library/Application Support/Lnd/admin.macaroon on Mac
+		var m = fs.readFileSync(env.rpc.adminMacaroonFilepath);
+		var macaroon = m.toString('hex');
 
-	// build meta data credentials
-	var metadata = new grpc.Metadata()
-	metadata.add('macaroon', macaroon)
-	var macaroonCreds = grpc.credentials.createFromMetadataGenerator((_args, callback) => {
-		callback(null, metadata);
+		// build meta data credentials
+		var metadata = new grpc.Metadata()
+		metadata.add('macaroon', macaroon)
+		var macaroonCreds = grpc.credentials.createFromMetadataGenerator((_args, callback) => {
+			callback(null, metadata);
+		});
+
+		//  Lnd cert is at ~/.lnd/tls.cert on Linux and
+		//  ~/Library/Application Support/Lnd/tls.cert on Mac
+		var lndCert = fs.readFileSync(env.rpc.tlcCertFilepath);
+		var sslCreds = grpc.credentials.createSsl(lndCert);
+
+		// combine the cert credentials and the macaroon auth credentials
+		// such that every call is properly encrypted and authenticated
+		var credentials = grpc.credentials.combineChannelCredentials(sslCreds, macaroonCreds);
+
+		var lnrpcDescriptor = grpc.load(env.rpc.lndRpcProtoFileFilepath); // "rpc.proto"
+		var lnrpc = lnrpcDescriptor.lnrpc;
+
+		// uncomment to print available function of RPC protocol
+		//console.log(lnrpc);
+		
+		var lightning = new lnrpc.Lightning(env.rpc.host + ":" + env.rpc.port, credentials);
+
+		lightning.GetInfo({}, function(err, response) {
+			if (err) {
+				console.log("Error connecting to LND @ " + env.rpc.host + ":" + env.rpc.port + " via RPC: " + err);
+			}
+
+			console.log("Connected to LND @ " + env.rpc.host + ":" + env.rpc.port + " via RPC.\n\nGetInfo=" + JSON.stringify(response, null, 4));
+
+			global.lightning = lightning;
+
+			resolve();
+		});
 	});
-
-	//  Lnd cert is at ~/.lnd/tls.cert on Linux and
-	//  ~/Library/Application Support/Lnd/tls.cert on Mac
-	var lndCert = fs.readFileSync(env.rpc.tlcCertFilepath);
-	var sslCreds = grpc.credentials.createSsl(lndCert);
-
-	// combine the cert credentials and the macaroon auth credentials
-	// such that every call is properly encrypted and authenticated
-	var credentials = grpc.credentials.combineChannelCredentials(sslCreds, macaroonCreds);
-
-	var lnrpcDescriptor = grpc.load(env.rpc.lndRpcProtoFileFilepath); // "rpc.proto"
-	var lnrpc = lnrpcDescriptor.lnrpc;
-
-	// uncomment to print available function of RPC protocol
-	//console.log(lnrpc);
-	
-	var lightning = new lnrpc.Lightning(env.rpc.host + ":" + env.rpc.port, credentials);
-
-	lightning.GetInfo({}, function(err, response) {
-		if (err) {
-			console.log("Error connecting to LND @ " + env.rpc.host + ":" + env.rpc.port + " via RPC: " + err);
-		}
-
-		console.log("Connected to LND @ " + env.rpc.host + ":" + env.rpc.port + " via RPC.\n\nGetInfo=" + JSON.stringify(response, null, 4));
-	});
-
-	global.lightning = lightning;
 }
 
 

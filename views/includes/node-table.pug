@@ -5,8 +5,9 @@ table(class="table table-responsive-sm mb-5")
 			th Address
 			th Last Update
 			th Channels
+			th Capacity
 			th Description
 	
 	tbody
-		each node, index in nodes
+		each nodeInfo, index in nodeInfos
 			include ./node-table-row.pug

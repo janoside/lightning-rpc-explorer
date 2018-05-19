@@ -7,7 +7,7 @@ block content
 	h1(class="h2") Nodes
 	hr
 
-	div(class="card mb-3")
+	div(class="card mb-4")
 		div(class="card-body")
 			strong Sort By: 
 			a(href="/nodes?sort=last_update-desc", style=(sort == "last_update-desc" ? "font-weight: bold;" : false)) Last Updated
@@ -19,7 +19,7 @@ block content
 	include includes/node-table.pug
 
 
-	- var nodeCount = describeGraph.nodes.length;
+	- var nodeCount = fullNetworkDescription.nodes.sortedByLastUpdate.length;
 	if (nodeCount > limit)
 		- var pageNumber = offset / limit + 1;
 		- var pageCount = Math.floor(nodeCount / limit);

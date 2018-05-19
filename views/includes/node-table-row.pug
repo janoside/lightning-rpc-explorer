@@ -1,22 +1,25 @@
 tr(class="monospace")
 	td
-		a(href=("/node/" + node.pub_key), title=node.pubkey, data-toggle="tooltip") #{node.pub_key.substring(0, 20)}
+		a(href=("/node/" + nodeInfo.node.pub_key), title=nodeInfo.node.pub_key, data-toggle="tooltip") #{nodeInfo.node.pub_key.substring(0, 20)}
 
 	td
-		if (node.addresses && node.addresses.length > 0)
-			span #{node.addresses[0].addr}
+		if (nodeInfo.node.addresses && nodeInfo.node.addresses.length > 0)
+			span #{nodeInfo.node.addresses[0].addr}
 		else
 			span ?
 
 	td
-		- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(node.last_update) * 1000))));
+		- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(nodeInfo.node.last_update) * 1000))));
 
-		span #{moment.utc(new Date(parseInt(node.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")}
+		span #{moment.utc(new Date(parseInt(nodeInfo.node.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")}
 		span(class="text-muted")  (#{timeAgo.humanize()})
 
 	td
-		span #{node.num_channels}
+		span #{parseInt(nodeInfo.num_channels).toLocaleString()}
 
 	td
-		div(style=("display: inline-block; width: 1em; height: 14px; padding: 0; margin: 0; border-radius: 0.2em; background: " + node.color))
-		span  #{node.alias}
+		span #{parseInt(nodeInfo.total_capacity).toLocaleString()}
+
+	td
+		div(style=("display: inline-block; width: 1em; height: 14px; padding: 0; margin: 0; border-radius: 0.2em; background: " + nodeInfo.node.color))
+		span  #{nodeInfo.node.alias}
