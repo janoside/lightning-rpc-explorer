@@ -179,32 +179,24 @@ router.post("/search", function(req, res) {
 
 	req.session.query = req.body.query;
 
-	lightning.getNodeInfo({pub_key:query}, function(err, response) {
-		if (err) {
-			console.log("Error 0u23f0u2ebf: " + err);
-		}
+	rpcApi.getFullNetworkDescription().then(function(fnd) {
+		res.locals.fullNetworkDescription = fnd;
 
-		if (response) {
+		if (fnd.nodeInfoByPubkey[query]) {
 			res.redirect("/node/" + query);
 
 			return;
 		}
 
-		lightning.getChanInfo(query, function(err2, response2) {
-			if (err2) {
-				console.log("Error 0quwfu0e0b: " + err2);
-			}
+		if (fnd.channelsById[query]) {
+			res.redirect("/channel/" + query);
 
-			if (response2) {
-				res.redirect("/channel/" + query);
+			return;
+		}
 
-				return;
-			}
+		req.session.userMessage = "No results found for query: " + query;
 
-			req.session.userMessage = "No results found for query: " + query;
-
-			res.redirect("/");
-		});
+		res.redirect("/");
 	});
 });
 
