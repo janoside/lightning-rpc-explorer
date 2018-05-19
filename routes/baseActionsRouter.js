@@ -18,69 +18,33 @@ router.get("/", function(req, res) {
 router.get("/node/:nodePubKey", function(req, res) {
 	var nodePubKey = req.params.nodePubKey;
 
-	lightning.describeGraph({}, function(err, response) {
-		if (err) {
-			console.log("Error u3r03gwfewf: " + err);
-		}
-
-		res.locals.describeGraph = response;
+	rpcApi.getFullNetworkDescription().then(function(fnd) {
+		res.locals.fullNetworkDescription = fnd;
+		res.locals.nodeInfo = fnd.nodeInfoByPubkey[nodePubKey];
 
 		res.locals.nodeChannels = [];
-		res.locals.describeGraph.edges.forEach(function(channel) {
+		fnd.channels.sortedByLastUpdate.forEach(function(channel) {
 			if (channel.node1_pub == nodePubKey || channel.node2_pub == nodePubKey) {
 				res.locals.nodeChannels.push(channel);
 			}
 		});
 
-		res.locals.nodeChannels.sort(function(a, b) {
-			return b.last_update - a.last_update;
-		});
-
-		lightning.getNodeInfo({pub_key:nodePubKey}, function(err2, response2) {
-			if (err2) {
-				console.log("Error qu3gfewewb0: " + err2);
-			}
-
-			res.locals.nodeInfo = response2;
-
-			res.render("node");
-			res.end();
-		});
+		res.render("node");
 	});
 });
 
 router.get("/channel/:channelId", function(req, res) {
 	var channelId = req.params.channelId;
 
-	lightning.getChanInfo(channelId, function(err, response) {
-		if (err) {
-			console.log("Error 923uhf2fgeu: " + err);
-		}
+	rpcApi.getFullNetworkDescription().then(function(fnd) {
+		res.locals.fullNetworkDescription = fnd;
 
-		res.locals.channel = response;
+		res.locals.channel = fnd.channelsById[channelId];
 
-		lightning.getNodeInfo({pub_key:response.node1_pub}, function(err2, response2) {
-			if (err2) {
-				console.log("Error uq3efbweyfge: " + err2);
-			}
+		res.locals.node1 = fnd.nodeInfoByPubkey[res.locals.channel.node1_pub];
+		res.locals.node2 = fnd.nodeInfoByPubkey[res.locals.channel.node2_pub];
 
-			if (response2) {
-				res.locals.node1 = response2;
-			}
-
-			lightning.getNodeInfo({pub_key:response.node2_pub}, function(err3, response3) {
-				if (err3) {
-					console.log("Error ousdhf0ewg: " + err3);
-				}
-
-				if (response3) {
-					res.locals.node2 = response3;
-				}
-
-				res.render("channel");
-				res.end();
-			});
-		});
+		res.render("channel");
 	});
 });
 
@@ -180,36 +144,25 @@ router.get("/channels", function(req, res) {
 	res.locals.sort = sort;
 	res.locals.paginationBaseUrl = "/channels";
 
-	lightning.describeGraph({}, function(err, response) {
-		res.locals.describeGraph = response;
+	var sortProperty = sort.substring(0, sort.indexOf("-"));
+	var sortDirection = sort.substring(sort.indexOf("-") + 1);
 
-		var sortProperty = sort.substring(0, sort.indexOf("-"));
-		var sortDirection = sort.substring(sort.indexOf("-") + 1);
+	rpcApi.getFullNetworkDescription().then(function(fnd) {
+		res.locals.fullNetworkDescription = fnd;
 
-		res.locals.channels = response.edges;
+		if (sortProperty == "last_update") {
+			res.locals.channels = fnd.channels.sortedByLastUpdate;
 
-		res.locals.channels.sort(function(a, b) {
-			if (sortProperty == "last_update") {
-				return b.last_update - a.last_update;
+		} else if (sortProperty == "capacity") {
+			res.locals.channels = fnd.channels.sortedByCapacity;
 
-			} else if (sortProperty == "capacity") {
-				var diff = b.capacity - a.capacity;
-
-				if (diff == 0) {
-					return b.last_update - a.last_update;
-
-				} else {
-					return diff;
-				}
-			} else {
-				return b.last_update - a.last_update;
-			}
-		});
+		} else {
+			res.locals.channels = fnd.channels.sortedByLastUpdate;
+		}
 
 		res.locals.channels = res.locals.channels.slice(offset, offset + limit);
 
 		res.render("channels");
-		res.end();
 	});
 });
 

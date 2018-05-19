@@ -18,7 +18,7 @@ block content
 	include includes/channel-table.pug
 
 
-	- var channelCount = describeGraph.edges.length;
+	- var channelCount = fullNetworkDescription.channels.sortedByLastUpdate.length;
 	if (channelCount > limit)
 		- var pageNumber = offset / limit + 1;
 		- var pageCount = Math.floor(channelCount / limit);

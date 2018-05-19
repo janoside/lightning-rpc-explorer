@@ -57,6 +57,7 @@ function compileFullNetworkDescription(describeGraphResponse, nodeInfoByPubkey) 
 	fnd.lastUpdate = new Date();
 
 	fnd.nodes = {};
+	fnd.nodeInfoByPubkey = nodeInfoByPubkey;
 	fnd.nodes.sortedByLastUpdate = [];
 	fnd.nodes.sortedByChannelCount = [];
 	fnd.nodes.sortedByTotalCapacity = [];
@@ -97,8 +98,13 @@ function compileFullNetworkDescription(describeGraphResponse, nodeInfoByPubkey) 
 	
 
 	fnd.channels = {};
+	fnd.channelsById = {};
 	fnd.channels.sortedByLastUpdate = describeGraphResponse.edges;
 	fnd.channels.sortedByCapacity = describeGraphResponse.edges.slice(0);
+
+	fnd.channels.sortedByLastUpdate.forEach(function(channel) {
+		fnd.channelsById[channel.channel_id] = channel;
+	});
 
 	fnd.channels.sortedByLastUpdate.sort(function(a, b) {
 		return b.last_update - a.last_update;
