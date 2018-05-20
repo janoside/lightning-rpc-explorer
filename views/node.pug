@@ -20,6 +20,19 @@ block content
 		div(id="tab-summary", class="tab-pane active", role="tabpanel")
 			table(class="table")
 				tr
+					th(class="table-active properties-header") Description
+					td
+						div(style=("display: inline-block; width: 1em; height: 14px; padding: 0; margin: 0; border-radius: 0.2em; background: " + nodeInfo.node.color))
+						span  #{nodeInfo.node.alias}
+
+				tr
+					th(class="table-active properties-header") Addresses
+					td(class="monospace")
+						each addressItem in nodeInfo.node.addresses
+							span #{addressItem.network} #{addressItem.addr}
+							br
+
+				tr
 					th(class="table-active properties-header") Last Update
 
 					- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(nodeInfo.node.last_update) * 1000))));
