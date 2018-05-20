@@ -1,0 +1,24 @@
+extends layout
+
+block headContent
+	title Search - #{query}
+	
+block content
+
+	h1(class="h2") Search
+		small : #{query}
+	hr
+
+	h2(class="h5")
+		span Found #{searchResults.nodes.length.toLocaleString()} 
+		if (searchResults.nodes.length == 1)
+			span node
+		else
+			span nodes
+
+	if (searchResults && searchResults.nodes && searchResults.nodes.length > 0)
+		- var nodeInfos = searchResults.nodes;
+		include includes/node-table.pug
+
+	else
+		div(class="alert alert-warning") No results found for query: #{query}
