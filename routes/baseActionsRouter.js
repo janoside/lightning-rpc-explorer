@@ -166,8 +166,8 @@ router.get("/channels", function(req, res) {
 	});
 });
 
-router.post("/search", function(req, res) {
-	if (!req.body.query) {
+router.get("/search", function(req, res) {
+	if (!req.query.query) {
 		req.session.userMessage = "Enter a public key, alias, address, or channel id.";
 
 		res.redirect("/");
@@ -175,9 +175,9 @@ router.post("/search", function(req, res) {
 		return;
 	}
 
-	var query = req.body.query.toLowerCase().trim();
+	var query = req.query.query.toLowerCase().trim();
 
-	req.session.query = req.body.query;
+	res.locals.query = query;
 
 	rpcApi.getFullNetworkDescription().then(function(fnd) {
 		res.locals.fullNetworkDescription = fnd;
@@ -194,9 +194,23 @@ router.post("/search", function(req, res) {
 			return;
 		}
 
-		req.session.userMessage = "No results found for query: " + query;
+		res.locals.searchResults = {};
+		res.locals.searchResults.nodes = [];
 
-		res.redirect("/");
+		fnd.nodes.sortedByLastUpdate.forEach(function(nodeInfo) {
+			if (nodeInfo.node.alias.toLowerCase().indexOf(query) > -1) {
+				res.locals.searchResults.nodes.push(nodeInfo);
+
+			} else {
+				nodeInfo.node.addresses.forEach(function(address) {
+					if (address.addr.indexOf(query) > -1) {
+						res.locals.searchResults.nodes.push(nodeInfo);
+					}
+				});
+			}
+		});
+
+		res.render("search");
 	});
 });
 
