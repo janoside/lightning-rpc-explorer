@@ -125,12 +125,23 @@ function compileFullNetworkDescription(describeGraphResponse, nodeInfoByPubkey) 
 		}
 	});
 
-	
-
 	return fnd;
+}
+
+function connectToPeer(pubKey, address) {
+	return new Promise(function(resolve, reject) {
+		lightning.connect(pubKey + "@" + address).then(function(err, response) {
+			if (err) {
+				console.log("Error 23urh0efygf: " + err);
+			}
+
+			resolve(response);
+		});
+	});
 }
 
 module.exports = {
 	getFullNetworkDescription: getFullNetworkDescription,
-	refreshFullNetworkDescription: refreshFullNetworkDescription
+	refreshFullNetworkDescription: refreshFullNetworkDescription,
+	connectToPeer: connectToPeer
 };

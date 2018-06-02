@@ -222,4 +222,22 @@ router.get("/about", function(req, res) {
 	res.render("about");
 });
 
+router.get("/connectToPeer", function(req, res) {
+	if (!req.query.pubKey) {
+		req.session.userMessage = "Unable to connect to peer: missing pubKey";
+
+		res.redirect(req.headers.referer);
+	}
+
+	if (!req.query.address) {
+		req.session.userMessage = "Unable to connect to peer: missing address";
+
+		res.redirect(req.headers.referer);
+	}
+
+	rpcApi.connectToPeer(req.query.pubKey, req.query.address).then(function(response) {
+		res.redirect(req.headers.referer);
+	});
+});
+
 module.exports = router;

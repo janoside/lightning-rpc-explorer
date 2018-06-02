@@ -54,6 +54,13 @@ block content
 
 			div(class="card")
 				div(class="card-header")
+					span(class="h6") Actions
+				div(class="card-body")
+					if (nodeInfo.node.addresses && nodeInfo.node.addresses.length > 0)
+						a(href=("/connectToPeer?pubKey=" + nodeInfo.node.pub_key + "&address=" + nodeInfo.node.addresses[0].addr), class="btn btn-primary") Connect as Peer
+
+			div(class="card")
+				div(class="card-header")
 					span(class="h6") Channels (#{parseInt(nodeInfo.num_channels).toLocaleString()})
 				div(class="card-body")
 					- var channels = nodeChannels;
