@@ -28,9 +28,12 @@ block content
 				tr
 					th(class="table-active properties-header") Addresses
 					td(class="monospace")
-						each addressItem in nodeInfo.node.addresses
-							span #{addressItem.network} #{addressItem.addr}
-							br
+						if (nodeInfo.node.addresses && nodeInfo.node.addresses.length > 0)
+							each addressItem in nodeInfo.node.addresses
+								span #{addressItem.network} #{addressItem.addr}
+								br
+						else
+							span ?
 
 				tr
 					th(class="table-active properties-header") Last Update

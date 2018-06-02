@@ -58,18 +58,32 @@ block content
 								th 1
 								td
 									a(href=("/node/" + channel.node1_pub)) #{channel.node1_pub.substring(0, 20)}
-								td #{channel.node1_policy.time_lock_delta}
-								td #{channel.node1_policy.min_htlc}
-								td #{channel.node1_policy.fee_base_msat}
-								td #{channel.node1_policy.fee_rate_milli_msat}
+
+								if (channel.node1_policy)
+									td #{channel.node1_policy.time_lock_delta}
+									td #{channel.node1_policy.min_htlc}
+									td #{channel.node1_policy.fee_base_msat}
+									td #{channel.node1_policy.fee_rate_milli_msat}
+								else
+									td ?
+									td ?
+									td ?
+									td ?
 							tr(class="monospace")
 								th 2
 								td
 									a(href=("/node/" + channel.node2_pub)) #{channel.node2_pub.substring(0, 20)}
-								td #{channel.node2_policy.time_lock_delta}
-								td #{channel.node2_policy.min_htlc}
-								td #{channel.node2_policy.fee_base_msat}
-								td #{channel.node2_policy.fee_rate_milli_msat}
+
+								if (channel.node2_policy)
+									td #{channel.node2_policy.time_lock_delta}
+									td #{channel.node2_policy.min_htlc}
+									td #{channel.node2_policy.fee_base_msat}
+									td #{channel.node2_policy.fee_rate_milli_msat}
+								else
+									td ?
+									td ?
+									td ?
+									td ?
 
 			div(class="card mb-3")
 				div(class="card-header")
