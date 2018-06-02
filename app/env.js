@@ -18,7 +18,7 @@ module.exports = {
 		host:"127.0.0.1",
 		port:10009,
 		adminMacaroonFilepath: "~/.lnd/admin.macaroon",
-		tlcCertFilepath: "~/.lnd/tls.cert",
+		tlsCertFilepath: "~/.lnd/tls.cert",
 		lndRpcProtoFileFilepath: "./rpc.proto"
 	},
 

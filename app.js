@@ -148,7 +148,7 @@ function connectViaRpc() {
 
 		//  Lnd cert is at ~/.lnd/tls.cert on Linux and
 		//  ~/Library/Application Support/Lnd/tls.cert on Mac
-		var lndCert = fs.readFileSync(env.rpc.tlcCertFilepath);
+		var lndCert = fs.readFileSync(env.rpc.tlsCertFilepath);
 		var sslCreds = grpc.credentials.createSsl(lndCert);
 
 		// combine the cert credentials and the macaroon auth credentials
