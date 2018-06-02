@@ -168,7 +168,9 @@ function connectViaRpc() {
 				console.log("Error connecting to LND @ " + env.rpc.host + ":" + env.rpc.port + " via RPC: " + err);
 			}
 
-			console.log("Connected to LND @ " + env.rpc.host + ":" + env.rpc.port + " via RPC.\n\nGetInfo=" + JSON.stringify(response, null, 4));
+			if (response != null) {
+				console.log("Connected to LND @ " + env.rpc.host + ":" + env.rpc.port + " via RPC.\n\nGetInfo=" + JSON.stringify(response, null, 4));
+			}
 
 			global.lightning = lightning;
 

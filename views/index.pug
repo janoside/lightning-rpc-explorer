@@ -26,77 +26,81 @@ block content
 	if (false)
 		pre #{JSON.stringify(fullNetworkDescription, null, 4)}
 
-	- var totalCapacity = 0;
-	each item in fullNetworkDescription.channels.sortedByLastUpdate
-		- totalCapacity = totalCapacity + parseInt(item.capacity);
+	if (fullNetworkDescription)
+		- var totalCapacity = 0;
+		each item in fullNetworkDescription.channels.sortedByLastUpdate
+			- totalCapacity = totalCapacity + parseInt(item.capacity);
 
 
-	div(class="card mb-4")
-		div(class="card-header")
-			span(class="h5") Network Summary
-		div(class="card-body")
-			table(class="table table-responsive-sm")
-				thead
-					tr
-						th Node Count
-						th Channel Count
-						th Total Capacity
-				tbody
-					tr
-						td(class="lead") #{fullNetworkDescription.nodes.sortedByLastUpdate.length.toLocaleString()}
-						td(class="lead") #{fullNetworkDescription.channels.sortedByLastUpdate.length.toLocaleString()}
-						td(class="lead") #{totalCapacity.toLocaleString()}
+		div(class="card mb-4")
+			div(class="card-header")
+				span(class="h5") Network Summary
+			div(class="card-body")
+				table(class="table table-responsive-sm")
+					thead
+						tr
+							th Node Count
+							th Channel Count
+							th Total Capacity
+					tbody
+						tr
+							td(class="lead") #{fullNetworkDescription.nodes.sortedByLastUpdate.length.toLocaleString()}
+							td(class="lead") #{fullNetworkDescription.channels.sortedByLastUpdate.length.toLocaleString()}
+							td(class="lead") #{totalCapacity.toLocaleString()}
 
 
-	div(class="card mb-4")
-		div(class="card-header")
-			span(class="h5") Nodes
-				small  (#{fullNetworkDescription.nodes.sortedByLastUpdate.length.toLocaleString()})
-			span(style="float: right;")
-				a(href="/nodes", class="btn btn-primary") Browse Nodes &raquo;
-		div(class="card-body")
-			ul(class='nav nav-tabs')
-				li(class="nav-item")
-					a(data-toggle="tab", href="#tab-nodes-sortedByLastUpdate", class="nav-link active", role="tab") Recently Updated
-				li(class="nav-item")
-					a(data-toggle="tab", href="#tab-nodes-sortedByChannelCount", class="nav-link", role="tab") Most Channels
-				li(class="nav-item")
-					a(data-toggle="tab", href="#tab-nodes-sortedByTotalCapacity", class="nav-link", role="tab") Most Capacity
+		div(class="card mb-4")
+			div(class="card-header")
+				span(class="h5") Nodes
+					small  (#{fullNetworkDescription.nodes.sortedByLastUpdate.length.toLocaleString()})
+				span(style="float: right;")
+					a(href="/nodes", class="btn btn-primary") Browse Nodes &raquo;
+			div(class="card-body")
+				ul(class='nav nav-tabs')
+					li(class="nav-item")
+						a(data-toggle="tab", href="#tab-nodes-sortedByLastUpdate", class="nav-link active", role="tab") Recently Updated
+					li(class="nav-item")
+						a(data-toggle="tab", href="#tab-nodes-sortedByChannelCount", class="nav-link", role="tab") Most Channels
+					li(class="nav-item")
+						a(data-toggle="tab", href="#tab-nodes-sortedByTotalCapacity", class="nav-link", role="tab") Most Capacity
 
-			div(class="tab-content")
-				div(id="tab-nodes-sortedByLastUpdate", class="tab-pane active", role="tabpanel")
-					- var nodeInfos = fullNetworkDescription.nodes.sortedByLastUpdate.slice(0, 10);
-					include includes/node-table.pug
+				div(class="tab-content")
+					div(id="tab-nodes-sortedByLastUpdate", class="tab-pane active", role="tabpanel")
+						- var nodeInfos = fullNetworkDescription.nodes.sortedByLastUpdate.slice(0, 10);
+						include includes/node-table.pug
 
-				div(id="tab-nodes-sortedByChannelCount", class="tab-pane", role="tabpanel")
-					- var nodeInfos = fullNetworkDescription.nodes.sortedByChannelCount.slice(0, 10);
-					include includes/node-table.pug
+					div(id="tab-nodes-sortedByChannelCount", class="tab-pane", role="tabpanel")
+						- var nodeInfos = fullNetworkDescription.nodes.sortedByChannelCount.slice(0, 10);
+						include includes/node-table.pug
 
-				div(id="tab-nodes-sortedByTotalCapacity", class="tab-pane", role="tabpanel")
-					- var nodeInfos = fullNetworkDescription.nodes.sortedByTotalCapacity.slice(0, 10);
-					include includes/node-table.pug
+					div(id="tab-nodes-sortedByTotalCapacity", class="tab-pane", role="tabpanel")
+						- var nodeInfos = fullNetworkDescription.nodes.sortedByTotalCapacity.slice(0, 10);
+						include includes/node-table.pug
 
-	div(class="card mb-4")
-		div(class="card-header")
-			span(class="h5") Channels
-				small  (#{fullNetworkDescription.channels.sortedByLastUpdate.length.toLocaleString()})
-			span(style="float: right;")
-				a(href="/channels", class="btn btn-primary") Browse Channels &raquo;
-		div(class="card-body")
-			ul(class='nav nav-tabs')
-				li(class="nav-item")
-					a(data-toggle="tab", href="#tab-channels-sortedByLastUpdate", class="nav-link active", role="tab") Recently Updated
-				li(class="nav-item")
-					a(data-toggle="tab", href="#tab-channels-sortedByCapacity", class="nav-link", role="tab") Most Capacity
+		div(class="card mb-4")
+			div(class="card-header")
+				span(class="h5") Channels
+					small  (#{fullNetworkDescription.channels.sortedByLastUpdate.length.toLocaleString()})
+				span(style="float: right;")
+					a(href="/channels", class="btn btn-primary") Browse Channels &raquo;
+			div(class="card-body")
+				ul(class='nav nav-tabs')
+					li(class="nav-item")
+						a(data-toggle="tab", href="#tab-channels-sortedByLastUpdate", class="nav-link active", role="tab") Recently Updated
+					li(class="nav-item")
+						a(data-toggle="tab", href="#tab-channels-sortedByCapacity", class="nav-link", role="tab") Most Capacity
 
-			div(class="tab-content")
-				div(id="tab-channels-sortedByLastUpdate", class="tab-pane active", role="tabpanel")
-					- var channels = fullNetworkDescription.channels.sortedByLastUpdate.slice(0, 10);
-					include includes/channel-table.pug
+				div(class="tab-content")
+					div(id="tab-channels-sortedByLastUpdate", class="tab-pane active", role="tabpanel")
+						- var channels = fullNetworkDescription.channels.sortedByLastUpdate.slice(0, 10);
+						include includes/channel-table.pug
 
-				div(id="tab-channels-sortedByCapacity", class="tab-pane", role="tabpanel")
-					- var channels = fullNetworkDescription.channels.sortedByCapacity.slice(0, 10);
-					include includes/channel-table.pug
+					div(id="tab-channels-sortedByCapacity", class="tab-pane", role="tabpanel")
+						- var channels = fullNetworkDescription.channels.sortedByCapacity.slice(0, 10);
+						include includes/channel-table.pug
+
+	else
+		div(class="alert alert-danger") No data available for current network state. Check your RPC connection.
 
 
 block endOfBody

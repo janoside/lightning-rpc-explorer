@@ -2,14 +2,12 @@ var fullNetworkDescription = null;
 
 function getFullNetworkDescription() {
 	return new Promise(function(resolve, reject) {
+		// try a manual refresh here, but don't wait for it
 		if (fullNetworkDescription == null) {
-			refreshFullNetworkDescription().then(function() {
-				resolve(fullNetworkDescription);
-			});
-
-		} else {
-			resolve(fullNetworkDescription);
+			refreshFullNetworkDescription();
 		}
+
+		resolve(fullNetworkDescription);
 	});
 }
 
