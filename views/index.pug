@@ -7,26 +7,26 @@ block content
 	h1(class="h2") Lightning Explorer
 	hr
 
-	if (env.demoSite)
-		div(class="alert alert-primary", role="alert")
-			p
-				strong Lightning Explorer
-				span  is 
-				a(href="https://github.com/janoside/lightning-rpc-explorer") open-source
-				span  and easy to set up. It can communicate with your lightning node via gRPC. See the 
-				a(href="https://github.com/janoside/lightning-rpc-explorer") project description
-				span  for a list of features and instructions for running.
-
-			div(style="height: 34px;")
-				a(class="github-button", href=env.siteInfo.sourceUrl, data-icon="octicon-star", data-size="large", data-show-count="true", aria-label="Star janoside/btc-rpc-explorer on GitHub", style="padding-right: 10px;") Star
-				
-				span    
-				a(class="github-button", href=(env.siteInfo.sourceUrl + "/fork"), data-icon="octicon-repo-forked", data-size="large", data-show-count="true", aria-label="Fork janoside/btc-rpc-explorer on GitHub") Fork
-
 	if (false)
 		pre #{JSON.stringify(fullNetworkDescription, null, 4)}
 
 	if (fullNetworkDescription)
+		if (env.demoSite)
+			div(class="alert alert-primary", role="alert")
+				p
+					strong Lightning Explorer
+					span  is 
+					a(href="https://github.com/janoside/lightning-rpc-explorer") open-source
+					span  and easy to set up. It can communicate with your lightning node via gRPC. See the 
+					a(href="https://github.com/janoside/lightning-rpc-explorer") project description
+					span  for a list of features and instructions for running.
+
+				div(style="height: 34px;")
+					a(class="github-button", href=env.siteInfo.sourceUrl, data-icon="octicon-star", data-size="large", data-show-count="true", aria-label="Star janoside/btc-rpc-explorer on GitHub", style="padding-right: 10px;") Star
+					
+					span    
+					a(class="github-button", href=(env.siteInfo.sourceUrl + "/fork"), data-icon="octicon-repo-forked", data-size="large", data-show-count="true", aria-label="Fork janoside/btc-rpc-explorer on GitHub") Fork
+		
 		- var totalCapacity = 0;
 		each item in fullNetworkDescription.channels.sortedByLastUpdate
 			- totalCapacity = totalCapacity + parseInt(item.capacity);
