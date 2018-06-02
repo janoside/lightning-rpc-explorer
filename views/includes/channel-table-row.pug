@@ -1,17 +1,16 @@
-tr(class="monospace")
+tr(class="monospace word-wrap")
 	td
 		a(href=("/channel/" + channel.channel_id)) #{channel.channel_id}
 
 	td
 		- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(channel.last_update) * 1000))));
 
-		span #{moment.utc(new Date(parseInt(channel.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")}
-		span(class="text-muted")  (#{timeAgo.humanize()})
+		span(title=moment.utc(new Date(parseInt(channel.last_update) * 1000)).format("Y-MM-DD HH:mm:ss"), data-toggle="tooltip") #{timeAgo.humanize()}
 
 	td
-		a(href=("/node/" + channel.node1_pub)) #{channel.node1_pub.substring(0, 20)}
+		a(href=("/node/" + channel.node1_pub), title=channel.node1_pub, data-toggle="tooltip") #{channel.node1_pub.substring(0, 20)}
 
 	td
-		a(href=("/node/" + channel.node2_pub)) #{channel.node2_pub.substring(0, 20)}
+		a(href=("/node/" + channel.node2_pub), title=channel.node2_pub, data-toggle="tooltip") #{channel.node2_pub.substring(0, 20)}
 
-	td #{parseInt(channel.capacity).toLocaleString()}
+	td(class="text-right") #{parseInt(channel.capacity).toLocaleString()}
