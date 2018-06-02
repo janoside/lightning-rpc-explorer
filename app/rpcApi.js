@@ -24,6 +24,12 @@ function refreshFullNetworkDescription() {
 				console.log("Error 2397gr2039rf6g2: " + err);
 			}
 
+			if (describeGraphResponse == null) {
+				resolve_1();
+
+				return;
+			}
+
 			var nodeInfoByPubkey = {};
 
 			var promises = [];
