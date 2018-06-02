@@ -50,17 +50,21 @@ router.get("/channel/:channelId", function(req, res) {
 
 router.get("/node-status", function(req, res) {
 	lightning.getInfo({}, function(err, response) {
+		if (err) {
+			console.log("Error 3u1rh2yugfew0fwe: " + err);
+		}
+
 		res.locals.getInfo = response;
 
 		lightning.listPeers({}, function(err2, response2) {
+			if (err2) {
+				console.log("Error 301uh0gq0edgedfge: " + err2);
+			}
+
 			res.locals.listPeers = response2;
 
-			lightning.describeGraph({}, function(err3, response3) {
-				res.locals.describeGraph = response3;
-
-				res.render("node-status");
-				res.end();
-			});
+			res.render("node-status");
+			res.end();
 		});
 	});
 });
