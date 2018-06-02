@@ -21,7 +21,7 @@ block content
 			table(class="table")
 				tr
 					th(class="table-active properties-header") Channel Point
-					td(class="monospace")
+					td(class="monospace word-wrap")
 						if (env.blockExplorerUrl)
 							a(href=(env.blockExplorerUrl + "/tx/" + channel.chan_point.substring(0, channel.chan_point.indexOf(":"))), target="_blank") #{channel.chan_point}
 						else
@@ -32,13 +32,13 @@ block content
 
 					- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(channel.last_update) * 1000))));
 
-					td(class="monospace")
+					td(class="monospace word-wrap")
 						span #{moment.utc(new Date(parseInt(channel.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")}
 						span(class="text-muted")  (#{timeAgo.humanize()})
 
 				tr
 					th(class="table-active properties-header") Capacity
-					td(class="monospace") #{parseInt(channel.capacity).toLocaleString()}
+					td(class="monospace word-wrap") #{parseInt(channel.capacity).toLocaleString()}
 
 			div(class="card mb-3")
 				div(class="card-header")
@@ -60,10 +60,10 @@ block content
 									a(href=("/node/" + channel.node1_pub)) #{channel.node1_pub.substring(0, 20)}
 
 								if (channel.node1_policy)
-									td #{channel.node1_policy.time_lock_delta}
-									td #{channel.node1_policy.min_htlc}
-									td #{channel.node1_policy.fee_base_msat}
-									td #{channel.node1_policy.fee_rate_milli_msat}
+									td #{parseInt(channel.node1_policy.time_lock_delta).toLocaleString()}
+									td #{parseInt(channel.node1_policy.min_htlc).toLocaleString()}
+									td #{parseInt(channel.node1_policy.fee_base_msat).toLocaleString()}
+									td #{parseInt(channel.node1_policy.fee_rate_milli_msat).toLocaleString()}
 								else
 									td ?
 									td ?
@@ -75,10 +75,10 @@ block content
 									a(href=("/node/" + channel.node2_pub)) #{channel.node2_pub.substring(0, 20)}
 
 								if (channel.node2_policy)
-									td #{channel.node2_policy.time_lock_delta}
-									td #{channel.node2_policy.min_htlc}
-									td #{channel.node2_policy.fee_base_msat}
-									td #{channel.node2_policy.fee_rate_milli_msat}
+									td #{parseInt(channel.node2_policy.time_lock_delta).toLocaleString()}
+									td #{parseInt(channel.node2_policy.min_htlc).toLocaleString()}
+									td #{parseInt(channel.node2_policy.fee_base_msat).toLocaleString()}
+									td #{parseInt(channel.node2_policy.fee_rate_milli_msat).toLocaleString()}
 								else
 									td ?
 									td ?
@@ -94,12 +94,14 @@ block content
 					include includes/node-details-table.pug
 
 		div(id="tab-raw", class="tab-pane", role="tabpanel")
-
+			h4 channelInfo
 			pre
 				code #{JSON.stringify(channel, null, 4)}
 
+			h4 node1Info
 			pre
 				code #{JSON.stringify(node1, null, 4)}
 
+			h4 node2Info
 			pre
 				code #{JSON.stringify(node2, null, 4)}
