@@ -11,8 +11,8 @@ block content
 		pre #{JSON.stringify(fullNetworkDescription, null, 4)}
 
 	if (fullNetworkDescription)
-		if (env.demoSite)
-			div(class="alert alert-primary", role="alert")
+		if (config.demoSite && session.hideHomepageBanner != "true")
+			div(class="alert alert-primary alert-dismissible", role="alert")
 				p
 					strong Lightning Explorer
 					span  is 
@@ -22,10 +22,14 @@ block content
 					span  for a list of features and instructions for running.
 
 				div(style="height: 34px;")
-					a(class="github-button", href=env.siteInfo.sourceUrl, data-icon="octicon-star", data-size="large", data-show-count="true", aria-label="Star janoside/btc-rpc-explorer on GitHub", style="padding-right: 10px;") Star
+					a(class="github-button", href=config.siteInfo.sourceUrl, data-icon="octicon-star", data-size="large", data-show-count="true", aria-label="Star janoside/btc-rpc-explorer on GitHub", style="padding-right: 10px;") Star
 					
 					span    
-					a(class="github-button", href=(env.siteInfo.sourceUrl + "/fork"), data-icon="octicon-repo-forked", data-size="large", data-show-count="true", aria-label="Fork janoside/btc-rpc-explorer on GitHub") Fork
+					a(class="github-button", href=(config.siteInfo.sourceUrl + "/fork"), data-icon="octicon-repo-forked", data-size="large", data-show-count="true", aria-label="Fork janoside/btc-rpc-explorer on GitHub") Fork
+
+				a(href="/changeSetting?name=hideHomepageBanner&value=true", class="close", aria-label="Close", style="text-decoration: none;")
+					span(aria-hidden="true") &times;
+				
 		
 		- var totalCapacity = 0;
 		each item in fullNetworkDescription.channels.sortedByLastUpdate
@@ -34,7 +38,7 @@ block content
 
 		div(class="card mb-4")
 			div(class="card-header")
-				span(class="h5") Network Summary
+				h2(class="h6 mb-0") Network Summary
 			div(class="card-body")
 				table(class="table table-responsive-sm")
 					thead
@@ -44,17 +48,30 @@ block content
 							th Total Capacity
 					tbody
 						tr
-							td(class="lead") #{fullNetworkDescription.nodes.sortedByLastUpdate.length.toLocaleString()}
-							td(class="lead") #{fullNetworkDescription.channels.sortedByLastUpdate.length.toLocaleString()}
-							td(class="lead") #{totalCapacity.toLocaleString()}
+							td(class="lead monospace") #{fullNetworkDescription.nodes.sortedByLastUpdate.length.toLocaleString()}
+							td(class="lead monospace") #{fullNetworkDescription.channels.sortedByLastUpdate.length.toLocaleString()}
+
+							- var currencyValue = new Decimal(totalCapacity).dividedBy(100000000);
+							td(class="lead")
+								include ./includes/value-display.pug
 
 
 		div(class="card mb-4")
 			div(class="card-header")
-				span(class="h5") Nodes
-					small  (#{fullNetworkDescription.nodes.sortedByLastUpdate.length.toLocaleString()})
-				span(style="float: right;")
-					a(href="/nodes", class="btn btn-primary") Browse Nodes &raquo;
+				div(class="row")
+					div(class="col")
+						h2(class="h6 mb-0") #{fullNetworkDescription.nodes.sortedByLastUpdate.length.toLocaleString()} 
+							if (fullNetworkDescription.nodes.sortedByLastUpdate.length == 1)
+								span Node
+							else
+								span Nodes
+
+					div(class="col")
+						span(style="float: right;")
+							a(href="/nodes")
+								i(class="fas fa-cube")
+								span  Browse Nodes &raquo;
+
 			div(class="card-body")
 				ul(class='nav nav-tabs')
 					li(class="nav-item")
@@ -79,10 +96,20 @@ block content
 
 		div(class="card mb-4")
 			div(class="card-header")
-				span(class="h5") Channels
-					small  (#{fullNetworkDescription.channels.sortedByLastUpdate.length.toLocaleString()})
-				span(style="float: right;")
-					a(href="/channels", class="btn btn-primary") Browse Channels &raquo;
+				div(class="row")
+					div(class="col")
+						h2(class="h6 mb-0") #{fullNetworkDescription.channels.sortedByLastUpdate.length.toLocaleString()} 
+							if (fullNetworkDescription.channels.sortedByLastUpdate.length == 1)
+								span Channel
+							else
+								span Channels
+
+					div(class="col")
+						span(style="float: right;")
+							a(href="/channels")
+								i(class="fas fa-bolt")
+								span  Browse Channels &raquo;
+
 			div(class="card-body")
 				ul(class='nav nav-tabs')
 					li(class="nav-item")

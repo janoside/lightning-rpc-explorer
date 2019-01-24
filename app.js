@@ -9,7 +9,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require("express-session");
-var env = require("./app/env.js");
+var config = require("./app/config.js");
 var simpleGit = require('simple-git');
 var utils = require("./app/utils.js");
 var moment = require("moment");
@@ -47,7 +47,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({
-	secret: env.cookiePassword,
+	secret: config.cookiePassword,
 	resave: false,
 	saveUninitialized: false
 }));
@@ -55,17 +55,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 function refreshExchangeRate() {
-	if (coins[env.coin].exchangeRateData) {
-		request(coins[env.coin].exchangeRateData.jsonUrl, function(error, response, body) {
+	if (coins[config.coin].exchangeRateData) {
+		request(coins[config.coin].exchangeRateData.jsonUrl, function(error, response, body) {
 			if (!error && response && response.statusCode && response.statusCode == 200) {
 				var responseBody = JSON.parse(body);
 
-				var exchangeRate = coins[env.coin].exchangeRateData.responseBodySelectorFunction(responseBody);
+				var exchangeRate = coins[config.coin].exchangeRateData.responseBodySelectorFunction(responseBody);
 				if (exchangeRate > 0) {
 					global.exchangeRate = exchangeRate;
 					global.exchangeRateUpdateTime = new Date();
 
-					console.log("Using exchange rate: " + global.exchangeRate + " USD/" + coins[env.coin].name + " starting at " + global.exchangeRateUpdateTime);
+					console.log("Using exchange rate: " + global.exchangeRate + " USD/" + coins[config.coin].name + " starting at " + global.exchangeRateUpdateTime);
 
 				} else {
 					console.log("Unable to get exchange rate data");
@@ -83,20 +83,20 @@ function refreshExchangeRate() {
 
 
 app.runOnStartup = function() {
-	global.env = env;
-	global.coinConfig = coins[env.coin];
+	global.config = config;
+	global.coinConfig = coins[config.coin];
 	global.coinConfigs = coins;
 
-	if (env.donationAddresses) {
+	if (config.donationAddresses) {
 		var getDonationAddressQrCode = function(coinId) {
-			qrcode.toDataURL(env.donationAddresses[coinId].address, function(err, url) {
+			qrcode.toDataURL(config.donationAddresses[coinId].address, function(err, url) {
 				global.donationAddressQrCodeUrls[coinId] = url;
 			});
 		};
 
 		global.donationAddressQrCodeUrls = {};
 
-		env.donationAddresses.coins.forEach(function(item) {
+		config.donationAddresses.coins.forEach(function(item) {
 			getDonationAddressQrCode(item);
 		});
 	}
@@ -136,7 +136,7 @@ function connectViaRpc() {
 
 		// Lnd admin macaroon is at ~/.lnd/admin.macaroon on Linux and
 		// ~/Library/Application Support/Lnd/admin.macaroon on Mac
-		var m = fs.readFileSync(env.rpc.adminMacaroonFilepath);
+		var m = fs.readFileSync(config.credentials.rpc.adminMacaroonFilepath);
 		var macaroon = m.toString('hex');
 
 		// build meta data credentials
@@ -148,28 +148,28 @@ function connectViaRpc() {
 
 		//  Lnd cert is at ~/.lnd/tls.cert on Linux and
 		//  ~/Library/Application Support/Lnd/tls.cert on Mac
-		var lndCert = fs.readFileSync(env.rpc.tlsCertFilepath);
+		var lndCert = fs.readFileSync(config.credentials.rpc.tlsCertFilepath);
 		var sslCreds = grpc.credentials.createSsl(lndCert);
 
 		// combine the cert credentials and the macaroon auth credentials
 		// such that every call is properly encrypted and authenticated
 		var credentials = grpc.credentials.combineChannelCredentials(sslCreds, macaroonCreds);
 
-		var lnrpcDescriptor = grpc.load(env.rpc.lndRpcProtoFileFilepath); // "rpc.proto"
+		var lnrpcDescriptor = grpc.load("./rpc.proto"); // "rpc.proto"
 		var lnrpc = lnrpcDescriptor.lnrpc;
 
 		// uncomment to print available function of RPC protocol
 		//console.log(lnrpc);
 		
-		var lightning = new lnrpc.Lightning(env.rpc.host + ":" + env.rpc.port, credentials);
+		var lightning = new lnrpc.Lightning(config.credentials.rpc.host + ":" + config.credentials.rpc.port, credentials, {'grpc.max_receive_message_length': 50*1024*1024});
 
 		lightning.GetInfo({}, function(err, response) {
 			if (err) {
-				console.log("Error connecting to LND @ " + env.rpc.host + ":" + env.rpc.port + " via RPC: " + err);
+				console.log("Error connecting to LND @ " + config.credentials.rpc.host + ":" + config.credentials.rpc.port + " via RPC: " + err + ", error json: " + JSON.stringify(err));
 			}
 
 			if (response != null) {
-				console.log("Connected to LND @ " + env.rpc.host + ":" + env.rpc.port + " via RPC.\n\nGetInfo=" + JSON.stringify(response, null, 4));
+				console.log("Connected to LND @ " + config.credentials.rpc.host + ":" + config.credentials.rpc.port + " via RPC.\n\nGetInfo=" + JSON.stringify(response, null, 4));
 			}
 
 			global.lightning = lightning;
@@ -185,21 +185,21 @@ app.use(function(req, res, next) {
 	// make session available in templates
 	res.locals.session = req.session;
 	
-	if (env.rpc) {
-		req.session.host = env.rpc.host;
-		req.session.port = env.rpc.port;
-		req.session.username = env.rpc.username;
+	if (config.credentials.rpc) {
+		req.session.host = config.credentials.rpc.host;
+		req.session.port = config.credentials.rpc.port;
+		req.session.username = config.credentials.rpc.username;
 
 		global.client = new bitcoinCore({
-			host: env.rpc.host,
-			port: env.rpc.port,
-			username: env.rpc.username,
-			password: env.rpc.password,
+			host: config.credentials.rpc.host,
+			port: config.credentials.rpc.port,
+			username: config.credentials.rpc.username,
+			password: config.credentials.rpc.password,
 			timeout: 5000
 		});
 	}
 
-	res.locals.env = global.env;
+	res.locals.config = global.config;
 	res.locals.coinConfig = global.coinConfig;
 	
 	res.locals.host = req.session.host;
@@ -215,6 +215,30 @@ app.use(function(req, res, next) {
 
 		} else {
 			req.session.currencyFormatType = "";
+		}
+	}
+
+	// theme
+	if (!req.session.uiTheme) {
+		var cookieValue = req.cookies['user-setting-uiTheme'];
+
+		if (cookieValue) {
+			req.session.uiTheme = cookieValue;
+
+		} else {
+			req.session.uiTheme = "";
+		}
+	}
+
+	// homepage banner
+	if (!req.session.hideHomepageBanner) {
+		var cookieValue = req.cookies['user-setting-hideHomepageBanner'];
+
+		if (cookieValue) {
+			req.session.hideHomepageBanner = cookieValue;
+
+		} else {
+			req.session.hideHomepageBanner = "false";
 		}
 	}
 

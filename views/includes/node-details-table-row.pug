@@ -3,27 +3,36 @@ tr(class="monospace")
 		th #{(index + 1).toLocaleString()}
 
 	td
-		a(href=("/node/" + node.node.pub_key), title=node.node.pubkey, data-toggle="tooltip") #{node.node.pub_key.substring(0, 20)}
+		a(href=("/node/" + node.node.pub_key), title=node.node.pub_key, data-toggle="tooltip") #{node.node.pub_key.substring(0, config.site.pubkeyMaxDisplayLength)}
+
+	td
+		- var node_color = node.node.color;
+		- var node_alias = node.node.alias;
+		include ./node-description-display.pug
 
 	td
 		if (node.node.addresses && node.node.addresses.length > 0)
-			span #{node.node.addresses[0].addr}
+			if (node.node.addresses[0].addr.length > 20)
+				span(title=node.node.addresses[0].addr) -#{node.node.addresses[0].addr.substring(node.node.addresses[0].addr.length - 20, node.node.addresses[0].addr.length - 1)}
+			else
+				span #{node.node.addresses[0].addr}
 		else
-			span ?
+			span -
 
 	td
-		- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(node.node.last_update) * 1000))));
+		if (node.node.last_update == 0)
+			span -
+		else
+			- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(node.node.last_update) * 1000))));
 
-		//span #{moment.utc(new Date(parseInt(node.node.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")}
-		span #{timeAgo.humanize()}
+			//span #{moment.utc(new Date(parseInt(node.node.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")}
+			span #{timeAgo.humanize()}
 
-	td
+	td(class="text-right")
 		span #{parseInt(node.num_channels).toLocaleString()}
 
-	td
+	td(class="text-right")
 		if (node.total_capacity)
-			span #{parseInt(node.total_capacity).toLocaleString()}
-
-	td
-		div(style=("display: inline-block; width: 1em; height: 14px; padding: 0; margin: 0; border-radius: 0.2em; background: " + node.node.color))
-		span  #{node.node.alias}
+			- var currencyValue = new Decimal(node.total_capacity).dividedBy(100000000);
+			include ./value-display.pug
+			//span #{parseInt(node.total_capacity).toLocaleString()}

@@ -17,12 +17,14 @@ function refreshFullNetworkDescription() {
 	console.log("Refreshing network description...");
 	
 	return new Promise(function(resolve_1, reject_1) {
-		lightning.describeGraph({}, function(err, describeGraphResponse) {
+		lightning.describeGraph({include_unannounced:true}, function(err, describeGraphResponse) {
 			if (err) {
-				console.log("Error 2397gr2039rf6g2: " + err);
+				console.log("Error 2397gr2039rf6g2: " + err + ", error json: " + JSON.stringify(err));
 			}
 
 			if (describeGraphResponse == null) {
+				console.log("Error 23ufhg024ge: null describeGraph response");
+
 				resolve_1();
 
 				return;
@@ -130,9 +132,11 @@ function compileFullNetworkDescription(describeGraphResponse, nodeInfoByPubkey) 
 
 function connectToPeer(pubKey, address) {
 	return new Promise(function(resolve, reject) {
-		lightning.connect(pubKey + "@" + address).then(function(err, response) {
+		lightning.connectPeer({addr:pubKey + "@" + address}).then(function(err, response) {
 			if (err) {
-				console.log("Error 23urh0efygf: " + err);
+				console.log("Error 23urh0efygf: " + err + ", error json: " + JSON.stringify(err));
+
+				reject(err);
 			}
 
 			resolve(response);

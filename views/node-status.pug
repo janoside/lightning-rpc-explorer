@@ -14,91 +14,107 @@ block content
 
 		ul(class='nav nav-tabs mb-3')
 			li(class="nav-item")
-				a(data-toggle="tab", href="#tab-summary", class="nav-link active", role="tab") Summary
+				a(data-toggle="tab", href="#tab-details", class="nav-link active", role="tab") Details
 			li(class="nav-item")
-				a(data-toggle="tab", href="#tab-raw", class="nav-link", role="tab") Raw
+				a(data-toggle="tab", href="#tab-json", class="nav-link", role="tab") JSON
 
 		div(class="tab-content")
-			div(id="tab-summary", class="tab-pane active", role="tabpanel")
-				table(class="table")
-					tr
-						th(class="table-active properties-header") Version
-						td(class="monospace word-wrap") #{getInfo.version}
+			div(id="tab-details", class="tab-pane active", role="tabpanel")
 
-					tr
-						th(class="table-active properties-header") URIs
-						td(class="monospace word-wrap")
-							each uri, index in getInfo.uris
-								if (getInfo.uris.length > 1)
-									span #{index + 1}: #{uri}
-								else
-									span #{uri}
-
-					tr
-						th(class="table-active properties-header") Public Key
-						td(class="monospace word-wrap") #{getInfo.identity_pubkey}
-
-					tr
-						th(class="table-active properties-header") Description
-						td(class="monospace word-wrap")
-							div(style=("display: inline-block; width: 1em; height: 14px; padding: 0; margin: 0; border-radius: 0.2em; background: " + getInfo.color))
-							span  #{getInfo.alias}
-
-					if (false)
-						tr
-							th(class="table-active properties-header") Addresses
-							td(class="monospace word-wrap")
-								each addressItem in getInfo.addresses
-									span #{addressItem.network} #{addressItem.addr}
-									br
-					tr
-						th(class="table-active properties-header") Chains
-						td(class="monospace word-wrap")
-							each chain in getInfo.chains
-								span #{chain}
-								br
-
-					tr
-						th(class="table-active properties-header") Current Block Hash
-
-						td(class="monospace word-wrap")
-							if (env.blockExplorerUrl)
-								a(href=(env.blockExplorerUrl + "/block/" + getInfo.block_hash), target="_blank") #{getInfo.block_hash}
-								br
-								span(class="text-muted") (#{getInfo.block_height.toLocaleString()})
-							else
-								span #{getInfo.block_hash}
-								br
-								span(class="text-muted") (#{getInfo.block_height.toLocaleString()})
-
-					tr
-						th(class="table-active properties-header") Active Channels
-						td(class="monospace word-wrap") #{parseInt(getInfo.num_active_channels).toLocaleString()}
-
-					tr
-						th(class="table-active properties-header") Pending Channels
-						td(class="monospace word-wrap") #{parseInt(getInfo.num_pending_channels).toLocaleString()}
-
-				div(class="card")
+				div(class="card mb-3")
 					div(class="card-header")
-						span(class="h5") Peers
+						h2(class="h6 mb-0") Summary
+					div(class="card-body")
+						table(class="table details-table mb-0")
+							tr
+								td(class="properties-header") Version
+								td(class="monospace") #{getInfo.version}
+
+							tr
+								td(class="properties-header") URIs
+								td(class="monospace")
+									each uri, index in getInfo.uris
+										if (getInfo.uris.length > 1)
+											span #{index + 1}: #{uri}
+										else
+											span #{uri}
+
+							tr
+								td(class="properties-header") Public Key
+								td(class="monospace") #{getInfo.identity_pubkey}
+
+							tr
+								td(class="properties-header") Alias
+								td(class="monospace word-wrap")
+									//div(style=("display: inline-block; width: 1em; height: 14px; padding: 0; margin: 0; border-radius: 0.2em; background: " + getInfo.color))
+									span  #{getInfo.alias}
+
+							tr
+								td(class="properties-header") Chains
+								td(class="monospace")
+									each chain in getInfo.chains
+										span #{chain.chain}_#{chain.network}
+										br
+
+							tr
+								td(class="properties-header") Current Block Hash
+								td(class="monospace word-wrap")
+									if (config.blockExplorerUrl)
+										a(href=(config.blockExplorerUrl + "/block/" + getInfo.block_hash), target="_blank") #{getInfo.block_hash}
+										br
+										span(class="text-muted") (#{getInfo.block_height.toLocaleString()})
+									else
+										span #{getInfo.block_hash}
+										br
+										span(class="text-muted") (#{getInfo.block_height.toLocaleString()})
+
+							tr
+								td(class="properties-header") Active Channels
+								td(class="monospace") #{parseInt(getInfo.num_active_channels).toLocaleString()}
+
+							tr
+								td(class="properties-header") Pending Channels
+								td(class="monospace") #{parseInt(getInfo.num_pending_channels).toLocaleString()}
+
+
+				div(class="card mb-3")
+					div(class="card-header")
+						h2(class="h6 mb-0")
+							span #{listPeers.peers.length.toLocaleString()} 
+							if (listPeers.peers.length == 1)
+								span Peer
+							else
+								span Peers
+
 					div(class="card-body")
 						table(class="table table-responsive-sm")
 							thead
 								tr
 									th Public key
+									th Description
 									th Address
 									th Data Transfer (up/down)
 									th Value Transfer (up/down)
 									th(class="text-center") Inbound?
 									th(class="text-right") Ping
+
 							tbody(class="monospace")
 								each item in listPeers.peers
 									tr
 										td
 											a(href=("/node/" + item.pub_key), title=item.pub_key, data-toggle="tooltip") #{item.pub_key.substring(0, 20)}
+
+										td
+											- var peerNode = fullNetworkDescription.nodeInfoByPubkey[item.pub_key];
+
+											- var node_color = peerNode.node.color;
+											- var node_alias = peerNode.node.alias;
+											include ./includes/node-description-display.pug
+
 										td #{item.address}
-										td #{utils.formatBytes(item.bytes_sent)} / #{utils.formatBytes(item.bytes_recv)}
+										- var bytesSentData = utils.formatLargeNumber(item.bytes_sent, 2);
+										- var bytesRecvData = utils.formatLargeNumber(item.bytes_recv, 2);
+										td #{bytesSentData[0]} #{bytesSentData[1].abbreviation}B / #{bytesRecvData[0]} #{bytesRecvData[1].abbreviation}B
 										td #{item.sat_sent} / #{item.sat_recv}
 										td(class="text-center")
 											if (item.inbound)
@@ -107,7 +123,7 @@ block content
 												i(class="fas fa-times text-danger")
 										td(class="text-right") #{parseInt(item.ping_time).toLocaleString()}
 
-			div(id="tab-raw", class="tab-pane", role="tabpanel")
+			div(id="tab-json", class="tab-pane", role="tabpanel")
 				if (getInfo)
 					h4 getinfo
 					pre

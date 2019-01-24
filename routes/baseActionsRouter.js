@@ -3,7 +3,6 @@ var router = express.Router();
 var util = require('util');
 var moment = require('moment');
 var utils = require('./../app/utils');
-var env = require("./../app/env");
 var bitcoinCore = require("bitcoin-core");
 var rpcApi = require("./../app/rpcApi.js");
 
@@ -61,10 +60,14 @@ router.get("/node-status", function(req, res) {
 				console.log("Error 301uh0gq0edgedfge: " + err2);
 			}
 
-			res.locals.listPeers = response2;
+			rpcApi.getFullNetworkDescription().then(function(fnd) {
+				res.locals.fullNetworkDescription = fnd;
 
-			res.render("node-status");
-			res.end();
+				res.locals.listPeers = response2;
+
+				res.render("node-status");
+				res.end();
+			});
 		});
 	});
 });
@@ -204,14 +207,21 @@ router.get("/search", function(req, res) {
 		fnd.nodes.sortedByLastUpdate.forEach(function(nodeInfo) {
 			if (nodeInfo.node.alias.toLowerCase().indexOf(query) > -1) {
 				res.locals.searchResults.nodes.push(nodeInfo);
-
-			} else {
-				nodeInfo.node.addresses.forEach(function(address) {
-					if (address.addr.indexOf(query) > -1) {
-						res.locals.searchResults.nodes.push(nodeInfo);
-					}
-				});
 			}
+
+			if (nodeInfo.node.pub_key.toLowerCase().indexOf(query) > -1) {
+				res.locals.searchResults.nodes.push(nodeInfo);
+			}
+
+			if (nodeInfo.node.color.indexOf(query) > -1) {
+				res.locals.searchResults.nodes.push(nodeInfo);
+			}
+
+			nodeInfo.node.addresses.forEach(function(address) {
+				if (address.addr.indexOf(query) > -1) {
+					res.locals.searchResults.nodes.push(nodeInfo);
+				}
+			});
 		});
 
 		res.render("search");

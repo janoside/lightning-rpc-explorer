@@ -4,23 +4,29 @@ html
 		meta(charset="utf-8")
 		meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, shrink-to-fit=no")
 		
-		link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css", integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4", crossorigin="anonymous")
-		link(rel="stylesheet", href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css")
-		link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Lato|Open+Sans|Cousine|Ubuntu:400,500,700")
+		if (session.uiTheme && session.uiTheme == "dark")
+			link(rel="stylesheet", href="/css/bootstrap-dark.css")
+
+			style.
+				hr { background-color: #555555; }
+		else
+			link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css", integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4", crossorigin="anonymous")
+		
+		link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Ubuntu:400,700")
 		link(rel="stylesheet", href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css")
 		link(rel='stylesheet', href='/css/styling.css')
 
 		link(rel="icon", type="image/png", href="/img/logo/lightning.png")
 
 		block headContent
-			title #{env.siteInfo.title}
+			title #{config.siteInfo.title}
 		
 	body
 		nav(class="navbar navbar-expand-lg navbar-dark bg-dark mb-4")
 			div(class="container")
 				a(class="navbar-brand", href="/")
 					img(src="/img/logo/lightning.svg", class="header-image")
-					span #{env.siteInfo.title}
+					span #{config.siteInfo.title}
 						
 				button(type="button", class="navbar-toggler navbar-toggler-right", data-toggle="collapse", data-target="#navbarNav")
 					span(class="navbar-toggler-icon")
@@ -45,6 +51,30 @@ html
 														if (currencyFormatType == valueName)
 															i(class="fas fa-check")
 													span  #{item.name}
+
+							li(class="nav-item dropdown")
+								a(class="nav-link dropdown-toggle", href="javascript:void(0)", id="navbarDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") 
+									i(class="fas fa-cog")
+									span  Settings
+								div(class="dropdown-menu", aria-labelledby="navbarDropdown")
+									if (coinConfig.currencyUnits)
+										span(class="dropdown-header") Currency Units
+										each item in coinConfig.currencyUnits
+											a(class="dropdown-item", href=("/changeSetting?name=currencyFormatType&value=" + item.values[0]))
+												each valueName in item.values
+													if (currencyFormatType == valueName)
+														i(class="fas fa-check")
+												span  #{item.name}
+
+									span(class="dropdown-header") Theme
+									a(class="dropdown-item", href="/changeSetting?name=uiTheme&value=light")
+										if (session.uiTheme == "light" || session.uiTheme == "")
+											i(class="fas fa-check")
+										span  Light
+									a(class="dropdown-item", href="/changeSetting?name=uiTheme&value=dark")
+										if (session.uiTheme == "dark")
+											i(class="fas fa-check")
+										span  Dark
 
 						form(method="get", action="/search", class="form-inline")
 							div(class="input-group input-group-sm")
@@ -82,17 +112,17 @@ html
 							dl
 								dt Source
 								dd
-									a(href=env.siteInfo.sourceUrl) #{env.siteInfo.sourceUrl.substring("https://".length)}
+									a(href=config.siteInfo.sourceUrl) #{config.siteInfo.sourceUrl.substring("https://".length)}
 
 								dt Running Version
 								dd
-									a(href=(env.siteInfo.sourceUrl + "/commit/" + sourcecodeVersion)) #{sourcecodeVersion}
+									a(href=(config.siteInfo.sourceUrl + "/commit/" + sourcecodeVersion)) #{sourcecodeVersion}
 									span(style="color: #ccc;")  (#{sourcecodeDate})
 
-								if (env.demoSite)
+								if (config.demoSite)
 									dt Public Demo
 									dd
-										a(href=env.siteInfo.demoSiteUrl) #{env.siteInfo.demoSiteUrl}
+										a(href=config.siteInfo.demoSiteUrl) #{config.siteInfo.demoSiteUrl}
 										
 										div(class="mt-2")
 											- var demoSiteCoins = ["BTC", "LTC"];
@@ -100,21 +130,21 @@ html
 												a(href=coinConfigs[demoSiteCoin].demoSiteUrl, class="mr-2")
 													img(src=("/img/logo/" + demoSiteCoin.toLowerCase() + ".svg"))
 
-											a(href=env.siteInfo.demoSiteUrl, class="mr-2")
+											a(href=config.siteInfo.demoSiteUrl, class="mr-2")
 													img(src=("/img/logo/lightning.svg"), style="width: 32px; height: 32px;")
 
 						div(class="col-md-6 text-md-right")
 							dl
-								dt Support Development of #{env.siteInfo.title}
+								dt Support Development of #{config.siteInfo.title}
 								dd
 									div
-										each coin, index in env.donationAddresses.coins
+										each coin, index in config.donationAddresses.coins
 											div(style="display: inline-block;", class="text-center mb-3", class=(index > 0 ? "ml-md-3" : false))
-												img(src=donationAddressQrCodeUrls[coin], alt=env.donationAddresses[coin].address, style="border: solid 1px #ccc;")
+												img(src=donationAddressQrCodeUrls[coin], alt=config.donationAddresses[coin].address, style="border: solid 1px #ccc;")
 												br
-												if (env.donationAddresses[coin].urlPrefix)
+												if (config.donationAddresses[coin].urlPrefix)
 													span #{coin}: 
-													a(href=(env.donationAddresses[coin].urlPrefix + env.donationAddresses[coin].address)) #{env.donationAddresses[coin].address.substring(0, 10)}...
+													a(href=(config.donationAddresses[coin].urlPrefix + config.donationAddresses[coin].address)) #{config.donationAddresses[coin].address.substring(0, 10)}...
 												else
 													span #{coin}
 				
@@ -123,7 +153,7 @@ html
 		script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js", integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ", crossorigin="anonymous")
 		script(src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js", integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb", crossorigin="anonymous")
 		script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js", integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm", crossorigin="anonymous")
-		script(defer, src="https://use.fontawesome.com/releases/v5.0.10/js/all.js", integrity="sha384-slN8GvtUJGnv6ca26v8EzVaR9DC58QEwsIk9q1QXdCU8Yu8ck/tL/5szYlBbqmS+", crossorigin="anonymous")
+		script(defer, src="https://use.fontawesome.com/releases/v5.2.0/js/all.js", integrity="sha384-4oV5EgaV02iISL2ban6c/RmotsABqE4yZxZLcYMAdG7FAPsyHYAPpywE9PJo+Khy", crossorigin="anonymous")
 
 		script(src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js")
 		

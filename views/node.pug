@@ -12,62 +12,84 @@ block content
 
 	ul(class='nav nav-tabs mb-3')
 		li(class="nav-item")
-			a(data-toggle="tab", href="#tab-summary", class="nav-link active", role="tab") Summary
+			a(data-toggle="tab", href="#tab-details", class="nav-link active", role="tab") Details
 		li(class="nav-item")
-			a(data-toggle="tab", href="#tab-raw", class="nav-link", role="tab") Raw
+			a(data-toggle="tab", href="#tab-json", class="nav-link", role="tab") JSON
 
 	div(class="tab-content")
-		div(id="tab-summary", class="tab-pane active", role="tabpanel")
-			table(class="table")
-				tr
-					th(class="table-active properties-header") Description
-					td
-						div(style=("display: inline-block; width: 1em; height: 14px; padding: 0; margin: 0; border-radius: 0.2em; background: " + nodeInfo.node.color))
-						span  #{nodeInfo.node.alias}
-
-				tr
-					th(class="table-active properties-header") Addresses
-					td(class="monospace")
-						if (nodeInfo.node.addresses && nodeInfo.node.addresses.length > 0)
-							each addressItem in nodeInfo.node.addresses
-								span #{addressItem.network} #{addressItem.addr}
-								br
-						else
-							span ?
-
-				tr
-					th(class="table-active properties-header") Last Update
-
-					- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(nodeInfo.node.last_update) * 1000))));
-
-					td(class="monospace")
-						span #{moment.utc(new Date(parseInt(nodeInfo.node.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")}
-						span(class="text-muted")  (#{timeAgo.humanize()})
-
-				tr
-					th(class="table-active properties-header") Channel Count
-					td(class="monospace") #{parseInt(nodeInfo.num_channels).toLocaleString()}
-
-				tr
-					th(class="table-active properties-header") Total Capacity
-					td(class="monospace") #{parseInt(nodeInfo.total_capacity).toLocaleString()}
-
-			div(class="card")
+		div(id="tab-details", class="tab-pane active", role="tabpanel")
+			div(class="card mb-3")
 				div(class="card-header")
-					span(class="h6") Actions
+					h2(class="h6 mb-0") Summary
+
 				div(class="card-body")
-					if (nodeInfo.node.addresses && nodeInfo.node.addresses.length > 0)
-						a(href=("/connectToPeer?pubKey=" + nodeInfo.node.pub_key + "&address=" + nodeInfo.node.addresses[0].addr), class="btn btn-primary") Connect as Peer
+					table(class="table details-table mb-0")
+						tr
+							td(class="properties-header") Alias
+							td(class="monospace")
+								if (nodeInfo.node.alias.length > 0)
+									span #{nodeInfo.node.alias}
+								else
+									span -
 
-			div(class="card")
+						tr
+							td(class="properties-header") Color
+							td(class="monospace")
+								- var node_color = nodeInfo.node.color;
+								include ./includes/node-color-swatch.pug
+								span #{nodeInfo.node.color}
+
+						tr
+							td(class="properties-header") Addresses
+							td(class="monospace")
+								if (nodeInfo.node.addresses && nodeInfo.node.addresses.length > 0)
+									each addressItem in nodeInfo.node.addresses
+										span #{addressItem.network} #{addressItem.addr}
+										br
+								else
+									span []
+
+						tr
+							- var timeAgoTime = nodeInfo.node.last_update;
+							td(class="properties-header") Last Update
+							td(class="monospace")
+								span #{moment.utc(new Date(parseInt(nodeInfo.node.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")} utc
+								include ./includes/time-ago.pug
+
+						tr
+							td(class="properties-header") Channel Count
+							td(class="monospace") #{parseInt(nodeInfo.num_channels).toLocaleString()}
+
+						tr
+							- var currencyValue = new Decimal(nodeInfo.total_capacity).dividedBy(100000000);
+							td(class="properties-header") Total Capacity
+							td(class="monospace")
+								include ./includes/value-display.pug
+								
+
+			if (false)
+				div(class="card mb-3")
+					div(class="card-header")
+						h2(class="h6 mb-0") Actions
+					div(class="card-body")
+						if (nodeInfo.node.addresses && nodeInfo.node.addresses.length > 0)
+							a(href=("/connectToPeer?pubKey=" + nodeInfo.node.pub_key + "&address=" + nodeInfo.node.addresses[0].addr), class="btn btn-primary") Connect as Peer
+
+			div(class="card mb-3")
 				div(class="card-header")
-					span(class="h6") Channels (#{parseInt(nodeInfo.num_channels).toLocaleString()})
+					h2(class="h6 mb-0")
+						span #{parseInt(nodeInfo.num_channels).toLocaleString()} 
+						if (nodeInfo.num_channels == 1)
+							span Channel
+						else
+							span Channels
+
 				div(class="card-body")
 					- var channels = nodeChannels;
 					include includes/channel-table.pug
 
 
-		div(id="tab-raw", class="tab-pane", role="tabpanel")
+		div(id="tab-json", class="tab-pane", role="tabpanel")
 			h4 nodeInfo
 			pre
 				code #{JSON.stringify(nodeInfo, null, 4)}
