@@ -5,6 +5,7 @@ var moment = require('moment');
 var utils = require('./../app/utils');
 var bitcoinCore = require("bitcoin-core");
 var rpcApi = require("./../app/rpcApi.js");
+var qrcode = require('qrcode');
 
 router.get("/", function(req, res) {
 	rpcApi.getFullNetworkDescription().then(function(fnd) {
@@ -21,6 +22,7 @@ router.get("/node/:nodePubKey", function(req, res) {
 		res.locals.fullNetworkDescription = fnd;
 		res.locals.nodeInfo = fnd.nodeInfoByPubkey[nodePubKey];
 
+
 		res.locals.nodeChannels = [];
 		fnd.channels.sortedByLastUpdate.forEach(function(channel) {
 			if (channel.node1_pub == nodePubKey || channel.node2_pub == nodePubKey) {
@@ -28,7 +30,31 @@ router.get("/node/:nodePubKey", function(req, res) {
 			}
 		});
 
-		res.render("node");
+		var qrcodeStrings = [];
+		qrcodeStrings.push(nodePubKey);
+
+		if (res.locals.nodeInfo.node.addresses) {
+			for (var i = 0; i < res.locals.nodeInfo.node.addresses.length; i++) {
+				if (res.locals.nodeInfo.node.addresses[i].network == "tcp") {
+					res.locals.nodeUri = nodePubKey + "@" + res.locals.nodeInfo.node.addresses[i].addr;
+
+					qrcodeStrings.push(res.locals.nodeUri);
+
+					break;
+				}
+			}
+		}
+
+		utils.buildQrCodeUrls(qrcodeStrings).then(function(qrcodeUrls) {
+			res.locals.qrcodeUrls = qrcodeUrls;
+
+			res.render("node");
+
+		}).catch(function(err) {
+			utils.logError("3e0ufhdhfsdss", err);
+			
+			res.render("node");
+		});
 	});
 });
 
@@ -48,27 +74,74 @@ router.get("/channel/:channelId", function(req, res) {
 });
 
 router.get("/node-status", function(req, res) {
-	lightning.getInfo({}, function(err, response) {
-		if (err) {
-			console.log("Error 3u1rh2yugfew0fwe: " + err);
-		}
+	var promises = [];
 
-		res.locals.getInfo = response;
+	promises.push(new Promise(function(resolve, reject) {
+		lightning.getInfo({}, function(err, response) {
+			if (err) {
+				utils.logError("3u1rh2yugfew0fwe", err);
 
-		lightning.listPeers({}, function(err2, response2) {
-			if (err2) {
-				console.log("Error 301uh0gq0edgedfge: " + err2);
+				reject(err);
+
+				return;
 			}
 
-			rpcApi.getFullNetworkDescription().then(function(fnd) {
-				res.locals.fullNetworkDescription = fnd;
+			res.locals.getInfo = response;
+			res.locals.qrcodeUrls = {};
 
-				res.locals.listPeers = response2;
+			var qrcodeStrings = [response.identity_pubkey];
+			if (response.uris && response.uris.length > 0) {
+				qrcodeStrings.push(response.uris[0]);
+			}
 
-				res.render("node-status");
-				res.end();
+			utils.buildQrCodeUrls(qrcodeStrings).then(function(qrcodeUrls) {
+				res.locals.qrcodeUrls = qrcodeUrls;
+
+				resolve();
+
+			}).catch(function(err) {
+				utils.logError("37ufdhewfhedd", err);
+
+				// no need to reject, we can fail gracefully without qrcodes
+				resolve();
 			});
 		});
+	}));
+
+	promises.push(new Promise(function(resolve, reject) {
+		lightning.listPeers({}, function(err, response) {
+			if (err) {
+				utils.logError("u3rhgqfdygews", err);
+
+				reject(err);
+
+				return;
+			}
+
+			res.locals.listPeers = response;
+
+			resolve();
+		});
+	}));
+
+	promises.push(new Promise(function(resolve, reject) {
+		rpcApi.getFullNetworkDescription().then(function(fnd) {
+			res.locals.fullNetworkDescription = fnd;
+
+			resolve();
+		});
+	}));
+
+	Promise.all(promises).then(function() {
+		res.render("node-status");
+		res.end();
+
+	}).catch(function(err) {
+		req.session.userErrors.push(err);
+
+		utils.logError("322u0rh2urf", err);
+
+		res.render("node-status");
 	});
 });
 

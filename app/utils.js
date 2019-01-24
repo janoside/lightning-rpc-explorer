@@ -1,5 +1,6 @@
 var Decimal = require("decimal.js");
 var request = require("request");
+var qrcode = require("qrcode");
 
 var config = require("./config.js");
 var coins = require("./coins.js");
@@ -417,6 +418,53 @@ function colorHexToHsl(hex) {
 	return rgbToHsl(rgb.r, rgb.g, rgb.b);
 }
 
+function logError(errorId, err, optionalUserData = null) {
+	console.log("Error " + errorId + ": " + err + ", json: " + JSON.stringify(err) + (optionalUserData != null ? (", userData: " + optionalUserData) : ""));
+}
+
+function buildQrCodeUrls(strings) {
+	return new Promise(function(resolve, reject) {
+		var promises = [];
+		var qrcodeUrls = {};
+
+		for (var i = 0; i < strings.length; i++) {
+			promises.push(new Promise(function(resolve2, reject2) {
+				buildQrCodeUrl(strings[i], qrcodeUrls).then(function() {
+					resolve2();
+
+				}).catch(function(err) {
+					reject2(err);
+				});
+			}));
+		}
+
+		Promise.all(promises).then(function(results) {
+			resolve(qrcodeUrls);
+
+		}).catch(function(err) {
+			reject(err);
+		});
+	});
+}
+
+function buildQrCodeUrl(str, results) {
+	return new Promise(function(resolve, reject) {
+		qrcode.toDataURL(str, function(err, url) {
+			if (err) {
+				utils.logError("2q3ur8fhudshfs", err, str);
+
+				reject(err);
+
+				return;
+			}
+
+			results[str] = url;
+
+			resolve();
+		});
+	});
+}
+
 
 module.exports = {
 	redirectToConnectPageIfNeeded: redirectToConnectPageIfNeeded,
@@ -440,5 +488,7 @@ module.exports = {
 	getTxTotalInputOutputValues: getTxTotalInputOutputValues,
 	rgbToHsl: rgbToHsl,
 	colorHexToRgb: colorHexToRgb,
-	colorHexToHsl: colorHexToHsl
+	colorHexToHsl: colorHexToHsl,
+	logError: logError,
+	buildQrCodeUrls: buildQrCodeUrls
 };

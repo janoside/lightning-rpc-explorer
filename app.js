@@ -199,6 +199,8 @@ app.use(function(req, res, next) {
 		});
 	}
 
+	req.session.userErrors = [];
+
 	res.locals.config = global.config;
 	res.locals.coinConfig = global.coinConfig;
 	
@@ -263,6 +265,12 @@ app.use(function(req, res, next) {
 
 		req.session.userMessage = null;
 		req.session.userMessageType = null;
+	}
+
+	if (req.session.userErrors && req.session.userErrors.length > 0) {
+		res.locals.userErrors = req.session.userErrors;
+
+		req.session.userErrors = null;
 	}
 
 	if (req.session.query) {
