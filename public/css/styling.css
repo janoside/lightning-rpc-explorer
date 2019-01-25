@@ -247,6 +247,12 @@ footer a:hover {
 	color: white;
 }
 
+.header-nav {
+	background-color: #eeeeee;
+	border-radius: 5px;
+	border: solid 1px #dddddd;
+}
+
 .table-striped>tbody>tr:nth-child(odd)>td, 
 .table-striped>tbody>tr:nth-child(odd)>th {
 	/*background-color: #fbfbfb;*/

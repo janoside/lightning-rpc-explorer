@@ -119,9 +119,11 @@ app.runOnStartup = function() {
 	// connect and pull down the current network description
 	connectViaRpc().then(function() {
 		rpcApi.refreshFullNetworkDescription();
+		rpcApi.refreshLocalChannels();
 
-		// refresh network description periodically
+		// refresh periodically
 		setInterval(rpcApi.refreshFullNetworkDescription, 60000);
+		setInterval(rpcApi.refreshLocalChannels, 60000);
 	});
 };
 
@@ -198,6 +200,8 @@ app.use(function(req, res, next) {
 			timeout: 5000
 		});
 	}
+
+	res.locals.admin = false;
 
 	req.session.userErrors = [];
 
@@ -282,7 +286,24 @@ app.use(function(req, res, next) {
 	// make some var available to all request
 	// ex: req.cheeseStr = "cheese";
 
-	next();
+	rpcApi.getFullNetworkDescription().then(function(fnd) {
+		res.locals.fullNetworkDescription = fnd;
+
+		rpcApi.getLocalChannels().then(function(localChannels) {
+			res.locals.localChannels = localChannels;
+
+			next();
+
+		}).catch(function(err) {
+			utils.logError("37921hdasudfgd", err);
+
+			next();
+		});
+	}).catch(function(err) {
+		utils.logError("3297rhgdgvsf1", err);
+
+		next();
+	});
 });
 
 app.use('/', baseActionsRouter);

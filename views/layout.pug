@@ -37,24 +37,20 @@ html
 							li(class="nav-item")
 								a(href="/about", class="nav-link")
 									span  About
-							if (false)
+
+							if (config.headerDropdownLinks)
 								li(class="nav-item dropdown")
-									a(class="nav-link dropdown-toggle", href="javascript:void(0)", id="navbarDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") 
-										i(class="fas fa-cog")
-										span  Settings
-									div(class="dropdown-menu", aria-labelledby="navbarDropdown")
-										if (coinConfig.currencyUnits)
-											span(class="dropdown-header") Currency Units
-											each item in coinConfig.currencyUnits
-												a(class="dropdown-item", href=("/changeSetting?name=currencyFormatType&value=" + item.values[0]))
-													each valueName in item.values
-														if (currencyFormatType == valueName)
-															i(class="fas fa-check")
-													span  #{item.name}
+									a(class="nav-link dropdown-toggle", href="javascript:void(0)", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") 
+										span  #{config.headerDropdownLinks.title}
+									div(class="dropdown-menu", aria-label=(config.headerDropdownLinks.title + " Items"))
+										each item in config.headerDropdownLinks.links
+											a(class="dropdown-item", href=item.url)
+												img(src=item.imgUrl, style="width: 24px; height: 24px; margin-right: 8px;", alt=item.name)
+												span  #{item.name}
 
 							li(class="nav-item dropdown")
 								a(class="nav-link dropdown-toggle", href="javascript:void(0)", id="navbarDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") 
-									i(class="fas fa-cog")
+									i(class="fas fa-cog mr-1")
 									span  Settings
 								div(class="dropdown-menu", aria-labelledby="navbarDropdown")
 									if (coinConfig.currencyUnits)
@@ -76,6 +72,23 @@ html
 											i(class="fas fa-check")
 										span  Dark
 
+							li(class="nav-item dropdown")
+								a(class="nav-link dropdown-toggle", href="javascript:void(0)", id="navbarDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") 
+									if (session.admin)
+										i(class="fas fa-user-shield mr-1") 
+										span  Admin
+									else
+										i(class="far fa-user mr-1") 
+										span  Account...
+										
+								div(class="dropdown-menu", aria-labelledby="navbarDropdown")
+									if (session.admin)
+										a(class="dropdown-item", href="/logout")
+											span  Logout
+									else
+										a(class="dropdown-item", href="/login")
+											span  Login
+
 						form(method="get", action="/search", class="form-inline")
 							div(class="input-group input-group-sm")
 								input(type="text", class="form-control form-control-sm", name="query", placeholder="pub key, channel id, alias, address", value=(query), style="width: 300px;")
@@ -88,6 +101,18 @@ html
 				ul(class="nav")
 					li(class="nav-item")
 						a(href="/node-status", class="nav-link") Node Status
+
+					li(class="nav-item")
+						a(href="/local-channels", class="nav-link") Local Channels
+
+					li(class="nav-item")
+						a(href="/payment-history", class="nav-link") Payment History
+
+					li(class="nav-item")
+						a(href="/send-payment", class="nav-link") Send Payment
+
+					li(class="nav-item")
+						a(href="/on-chain-transactions", class="nav-link") On-Chain Transactions
 
 					if (false)
 						li(class="nav-item")
@@ -102,6 +127,10 @@ html
 			if (userMessage)
 				div(class="alert", class=(userMessageType ? ("alert-"  + userMessageType) : "alert-info"), role="alert")
 					span !{userMessage}
+
+			else if (session.userMessage)
+				div(class="alert", class=(session.userMessageType ? ("alert-"  + session.userMessageType) : "alert-info"), role="alert")
+					span !{session.userMessage}
 			
 			block content
 

@@ -1,0 +1,85 @@
+extends layout
+
+block headContent
+	title Payment History
+	
+block content
+	h1(class="h2") Payment History
+	hr
+
+	if (!session.admin)
+		p If logged in as an admin, this page will display a list of payments made from your node.
+
+		a(href="/login") Login
+
+	else
+
+		ul(class='nav nav-tabs mb-3')
+			li(class="nav-item")
+				a(data-toggle="tab", href="#tab-details", class="nav-link active", role="tab") Details
+			li(class="nav-item")
+				a(data-toggle="tab", href="#tab-json", class="nav-link", role="tab") JSON
+
+		div(class="tab-content")
+			div(id="tab-details", class="tab-pane active", role="tabpanel")
+				nav.navbar.navbar-expand-lg.navbar-light.mb-2.header-nav
+					span.navbar-brand
+						span #{payments.payments.length.toLocaleString()} 
+						if (payments.payments.length == 1)
+							span Payment
+						else
+							span Payments
+
+				if (true)
+					table(class="table table-responsive-sm")
+						thead
+							tr
+								th
+								th Hash
+								th Destination
+								th Date
+								th(class="text-right") Hops
+								th(class="text-right") Value
+								th(class="text-right") Fee
+						
+						tbody
+							each payment, index in payments.payments
+								tr(class="monospace word-wrap")
+									td #{(index + 1).toLocaleString()}
+									td
+										span(title=payment.payment_hash, data-toggle="tooltip") #{payment.payment_hash.substring(0, 15)}
+									
+									if (false)
+										td
+											span(title=payment.payment_preimage, data-toggle="tooltip") #{payment.payment_preimage.substring(0, 15)}
+
+									td
+										- var destinationNodePubkey = payment.path[payment.path.length - 1];
+										- var destNode = fullNetworkDescription.nodeInfoByPubkey[destinationNodePubkey].node;
+										- var node_alias = destNode.alias;
+
+										a(href=("/node/" + destNode.pub_key), title=destNode.pub_key, data-toggle="tooltip") #{destNode.pub_key.substring(0, config.site.pubkeyMaxDisplayLength)}
+										br
+										include ./includes/node-alias-display.pug
+
+									td
+										- var timestampTime = parseInt(payment.creation_date);
+										- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(timestampTime) * 1000))));
+
+										span #{timeAgo.humanize()} ago 
+										span(title=(moment.utc(new Date(parseInt(timestampTime) * 1000)).format("Y-MM-DD HH:mm:ss") + " utc"), data-toggle="tooltip")
+											i(class="far fa-clock")
+
+									td(class="text-right") #{payment.path.length.toLocaleString()}
+
+									td(class="text-right")
+										- var currencyValue = new Decimal(payment.value_msat).dividedBy(100000000).dividedBy(1000);
+										include ./includes/value-display.pug
+
+									td(class="text-right")
+										- var currencyValue = new Decimal(payment.fee).dividedBy(100000000);
+										include ./includes/value-display.pug
+
+			div(id="tab-json", class="tab-pane", role="tabpanel")
+				pre
+					code #{JSON.stringify(payments, null, 4)}

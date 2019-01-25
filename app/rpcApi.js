@@ -1,4 +1,8 @@
+var utils = require("./utils.js");
+
+
 var fullNetworkDescription = null;
+var localChannels = null;
 
 function getFullNetworkDescription() {
 	return new Promise(function(resolve, reject) {
@@ -130,13 +134,137 @@ function compileFullNetworkDescription(describeGraphResponse, nodeInfoByPubkey) 
 	return fnd;
 }
 
+
+
+
+function getLocalChannels() {
+	return new Promise(function(resolve, reject) {
+		// try a manual refresh here, but don't wait for it
+		if (localChannels == null) {
+			refreshLocalChannels();
+		}
+
+		resolve(localChannels);
+	});
+}
+
+function refreshLocalChannels() {
+	var startTime = new Date();
+
+	console.log("Refreshing local channels...");
+	
+	return new Promise(function(resolve_1, reject_1) {
+		lightning.ListChannels({}, function(err, listChannelsResponse) {
+			if (err) {
+				utils.logError("23179egwqeufgsd", err);
+			}
+
+			if (listChannelsResponse == null) {
+				utils.logError("dfhg12328", "null listChannels response");
+
+				resolve_1();
+
+				return;
+			}
+
+			var localChannelsById = {};
+
+			listChannelsResponse.channels.forEach(function(channel) {
+				localChannelsById[channel.chan_id] = channel;
+			});
+
+			localChannels = {};
+			localChannels.channels = listChannelsResponse.channels;
+			localChannels.byId = localChannelsById;
+
+			console.log("Finished refreshing local channels; elapsed time: " + (new Date().getTime() - startTime.getTime()));
+
+			resolve_1();
+		});
+	});
+}
+
+
+
+
+
 function connectToPeer(pubKey, address) {
 	return new Promise(function(resolve, reject) {
-		lightning.connectPeer({addr:pubKey + "@" + address}).then(function(err, response) {
+		lightning.ConnectPeer({addr:{pubkey:pubKey, host:address}}, function(err, response) {
 			if (err) {
-				console.log("Error 23urh0efygf: " + err + ", error json: " + JSON.stringify(err));
+				utils.logError("82320ghfwreg", err);
 
 				reject(err);
+
+				return;
+			}
+
+			resolve(response);
+		});
+	});
+}
+
+function listPayments() {
+	return new Promise(function(resolve, reject) {
+		lightning.ListPayments({}, function(err, response) {
+			if (err) {
+				utils.logError("3297rfhwe7fesuwy", err);
+
+				reject(err);
+
+				return;
+			}
+
+			resolve(response);
+		});
+	});
+}
+
+function decodeInvoiceString(invoiceStr) {
+	return new Promise(function(resolve, reject) {
+		lightning.DecodePayReq({pay_req:invoiceStr}, function(err, response) {
+			if (err) {
+				utils.logError("08342ht074gtw", err);
+
+				reject(err);
+
+				return;
+			}
+
+			resolve(response);
+		});
+	});
+}
+
+function payInvoice(invoiceStr) {
+	console.log("Sending payment for invoice: " + invoiceStr);
+
+	return new Promise(function(resolve, reject) {
+		lightning.SendPaymentSync({payment_request:invoiceStr}, function(err, response) {
+			if (err) {
+				utils.logError("10r38dhf8shf", err);
+
+				reject(err);
+
+				return;
+			}
+
+			console.log("Payment sent, response: " + response + ", json: " + JSON.stringify(response) + ", invoice: " + invoiceStr);
+
+			resolve(response);
+		});
+	});
+}
+
+function getOnChainTransactions() {
+	return new Promise(function(resolve, reject) {
+		lightning.GetTransactions({}, function(err, response) {
+			if (err) {
+				utils.logError("123084r723yd", err);
+
+				reject(err);
+
+				return;
 			}
 
 			resolve(response);
@@ -147,5 +275,14 @@ function connectToPeer(pubKey, address) {
 module.exports = {
 	getFullNetworkDescription: getFullNetworkDescription,
 	refreshFullNetworkDescription: refreshFullNetworkDescription,
-	connectToPeer: connectToPeer
+
+	getLocalChannels: getLocalChannels,
+	refreshLocalChannels: refreshLocalChannels,
+
+	connectToPeer: connectToPeer,
+	listPayments: listPayments,
+
+	decodeInvoiceString: decodeInvoiceString,
+	payInvoice: payInvoice,
+	getOnChainTransactions: getOnChainTransactions
 };

@@ -1,0 +1,17 @@
+extends layout
+
+block content
+	h1(class="h2") Login
+	hr
+
+	form(method="post", action="/login")
+		div(class="form-group")
+			label(for="username") Username
+			input(type="text", class="form-control", id="username", name="username")
+
+		div(class="form-group")
+			label(for="password") Password
+			input(type="password", class="form-control", id="password", name="password")
+
+		button(type="submit", class="btn btn-primary") Login
+

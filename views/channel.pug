@@ -23,27 +23,33 @@ block content
 					h2(class="h6 mb-0") Summary
 
 				div(class="card-body")
-					table(class="table details-table mb-0")
-						tr
-							td(class="properties-header") Channel Point
-							td(class="monospace word-wrap")
-								if (config.blockExplorerUrl)
-									a(href=(config.blockExplorerUrl + "/tx/" + channel.chan_point.substring(0, channel.chan_point.indexOf(":"))), target="_blank") #{channel.chan_point}
-								else
-									span #{channel.chan_point}
+					div(class="row")
+						div(class="summary-table-label", title="On-chain transaction that opened this channel", data-toggle="tooltip") Channel Point
+						div(class="summary-table-content monospace")
+							if (config.blockExplorerUrl)
+								a(href=(config.blockExplorerUrl + "/tx/" + channel.chan_point.substring(0, channel.chan_point.indexOf(":"))), target="_blank") #{channel.chan_point}
+							else
+								span #{channel.chan_point}
 
-						tr
+					div(class="row")
+						div(class="summary-table-label") Last Update
+						div(class="summary-table-content monospace")
 							- var timeAgoTime = channel.last_update;
-							td(class="properties-header") Last Update
-							td(class="monospace")
-								span #{moment.utc(new Date(parseInt(channel.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")} utc
-								include ./includes/time-ago.pug
+							span #{moment.utc(new Date(parseInt(channel.last_update) * 1000)).format("Y-MM-DD HH:mm:ss")} utc
+							include ./includes/time-ago.pug
 
-						tr
-							td(class="properties-header") Capacity
+					div(class="row")
+						div(class="summary-table-label") Capacity
+						div(class="summary-table-content monospace")
 							- var currencyValue = new Decimal(channel.capacity).dividedBy(100000000);
-							td(class="monospace word-wrap")
-								include ./includes/value-display.pug
+							include ./includes/value-display.pug
+
+					if (localChannels.byId && localChannels.byId[channel.channel_id])
+						div(class="row")
+							div(class="summary-table-label") Local?
+							div(class="summary-table-content monospace")
+								i(class="fas fa-check text-success")
+								
 
 
 			div(class="card mb-3")

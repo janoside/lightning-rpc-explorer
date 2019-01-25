@@ -43,7 +43,8 @@ block content
 
 								div(class="row")
 									div(class="summary-split-table-label") Public Key
-									div(class="summary-split-table-content monospace") #{getInfo.identity_pubkey}
+									div(class="summary-split-table-content monospace")
+										a(href=("/node/" + getInfo.identity_pubkey)) #{getInfo.identity_pubkey}
 
 								div(class="row")
 									div(class="summary-split-table-label") Alias
