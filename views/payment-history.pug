@@ -22,7 +22,7 @@ block content
 
 		div(class="tab-content")
 			div(id="tab-details", class="tab-pane active", role="tabpanel")
-				nav.navbar.navbar-expand-lg.navbar-light.mb-2.header-nav
+				nav.navbar.navbar-expand-lg.navbar-light.mb-0.header-nav
 					span.navbar-brand
 						span #{payments.payments.length.toLocaleString()} 
 						if (payments.payments.length == 1)
@@ -32,15 +32,15 @@ block content
 
 				if (true)
 					table(class="table table-responsive-sm")
-						thead
+						thead(class="table-head-with-nav")
 							tr
 								th
 								th Hash
 								th Destination
 								th Date
 								th(class="text-right") Hops
-								th(class="text-right") Value
 								th(class="text-right") Fee
+								th(class="text-right") Value
 						
 						tbody
 							each payment, index in payments.payments
@@ -73,11 +73,11 @@ block content
 									td(class="text-right") #{payment.path.length.toLocaleString()}
 
 									td(class="text-right")
-										- var currencyValue = new Decimal(payment.value_msat).dividedBy(100000000).dividedBy(1000);
+										- var currencyValue = new Decimal(payment.fee).dividedBy(100000000);
 										include ./includes/value-display.pug
 
 									td(class="text-right")
-										- var currencyValue = new Decimal(payment.fee).dividedBy(100000000);
+										- var currencyValue = new Decimal(payment.value_msat).dividedBy(100000000).dividedBy(1000);
 										include ./includes/value-display.pug
 
 			div(id="tab-json", class="tab-pane", role="tabpanel")

@@ -80,7 +80,7 @@ html
 									else
 										i(class="far fa-user mr-1") 
 										span  Account...
-										
+
 								div(class="dropdown-menu", aria-labelledby="navbarDropdown")
 									if (session.admin)
 										a(class="dropdown-item", href="/logout")
@@ -107,6 +107,9 @@ html
 
 					li(class="nav-item")
 						a(href="/payment-history", class="nav-link") Payment History
+
+					li(class="nav-item")
+						a(href="/invoices", class="nav-link") Invoices
 
 					li(class="nav-item")
 						a(href="/send-payment", class="nav-link") Send Payment

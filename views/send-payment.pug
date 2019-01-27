@@ -69,7 +69,11 @@ block content
 							div(class="monospace")
 								div(class="row")
 									div(class="summary-table-label") Description
-									div(class="summary-table-content monospace") #{decodedInvoice.description}
+									div(class="summary-table-content monospace")
+										if (decodedInvoice.description)
+											span #{decodedInvoice.description}
+										else
+											span -
 
 								div(class="row")
 									div(class="summary-table-label") Hash

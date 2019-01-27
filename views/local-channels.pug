@@ -21,7 +21,7 @@ block content
 
 		div(class="tab-content")
 			div(id="tab-details", class="tab-pane active", role="tabpanel")
-				nav.navbar.navbar-expand-lg.navbar-light.mb-2.header-nav
+				nav.navbar.navbar-expand-lg.navbar-light.mb-0.header-nav
 					span.navbar-brand
 						span #{localChannels.channels.length.toLocaleString()} 
 						if (localChannels.channels.length == 1)
@@ -31,7 +31,7 @@ block content
 
 				if (true)
 					table(class="table table-responsive-sm")
-						thead
+						thead(class="table-head-with-nav")
 							tr
 								th
 								th ID

@@ -9,15 +9,17 @@ block content
 		small : #{query}
 	hr
 
-	h2(class="h5")
-		span Found #{searchResults.nodes.length.toLocaleString()} 
-		if (searchResults.nodes.length == 1)
-			span node
-		else
-			span nodes
+	nav.navbar.navbar-expand-lg.navbar-light.mb-0.header-nav
+		span.navbar-brand
+			span Found #{searchResults.nodes.length.toLocaleString()} 
+			if (searchResults.nodes.length == 1)
+				span Node
+			else
+				span Nodes
 
 	if (searchResults && searchResults.nodes && searchResults.nodes.length > 0)
 		- var nodeInfos = searchResults.nodes;
+		- var theadClass = "table-head-with-nav";
 		include includes/node-table.pug
 
 	else

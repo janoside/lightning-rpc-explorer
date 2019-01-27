@@ -531,4 +531,19 @@ router.get("/on-chain-transactions", function(req, res) {
 	});
 });
 
+router.get("/invoices", function(req, res) {
+	rpcApi.getInvoices().then(function(invoicesResponse) {
+		res.locals.invoices = invoicesResponse;
+		
+		res.render("invoices");
+
+	}).catch(function(err) {
+		req.session.userErrors.push(err);
+
+		utils.logError("3214r97y2gwefy", err);
+
+		res.render("invoices");
+	});
+});
+
 module.exports = router;

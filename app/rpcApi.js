@@ -272,6 +272,38 @@ function getOnChainTransactions() {
 	});
 }
 
+function getInvoices() {
+	return new Promise(function(resolve, reject) {
+		lightning.ListInvoices({}, function(err, response) {
+			if (err) {
+				utils.logError("213r07h23e07few", err);
+
+				reject(err);
+
+				return;
+			}
+
+			resolve(response);
+		});
+	});
+}
+
+function openChannel(remoteNodePubkey, localAmount, sendAmount) {
+	return new Promise(function(resolve, reject) {
+		lightning.OpenChannel({node_pubkey_string:remoteNodePubkey, local_funding_amount:localAmount, push_sat:sendAmount}, function(err, response) {
+			if (err) {
+				utils.logError("04fh23yg432", err);
+
+				reject(err);
+
+				return;
+			}
+
+			resolve(response);
+		});
+	});
+}
+
 module.exports = {
 	getFullNetworkDescription: getFullNetworkDescription,
 	refreshFullNetworkDescription: refreshFullNetworkDescription,
@@ -284,5 +316,6 @@ module.exports = {
 
 	decodeInvoiceString: decodeInvoiceString,
 	payInvoice: payInvoice,
-	getOnChainTransactions: getOnChainTransactions
+	getOnChainTransactions: getOnChainTransactions,
+	getInvoices: getInvoices
 };

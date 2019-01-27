@@ -66,7 +66,7 @@ block content
 													include ./includes/value-display.pug
 
 				div(class="mb-3")
-					nav.navbar.navbar-expand-lg.navbar-light.mb-2.header-nav
+					nav.navbar.navbar-expand-lg.navbar-light.mb-0.header-nav
 						span.navbar-brand
 							span #{confirmedTxCount.toLocaleString()} 
 							if (unconfirmedTxCount > 0)
@@ -78,14 +78,15 @@ block content
 
 					div(class="")
 						table(class="table table-responsive-sm")
-							thead
+							thead(class="table-head-with-nav")
 								tr
 									th
 									th Txid
 									th Addresses
-									th Block
-									th Timestamp
-									th Amount
+									th(class="text-right") Block
+									th(class="text-right") Confirmations
+									th Date
+									th(class="text-right") Amount
 							
 							tbody(class="monospace")
 								each tx, index in onChainTransactions.transactions
@@ -108,7 +109,7 @@ block content
 														span #{addr}
 														br
 
-											td
+											td(class="text-right")
 												if (config.blockExplorerUrl)
 													a(href=(config.blockExplorerUrl + "/block-height/" + tx.block_height), target="_blank") #{parseInt(tx.block_height).toLocaleString()}
 													span  
@@ -119,6 +120,8 @@ block content
 													span(title=tx.block_hash, data-toggle="tooltip") 
 														i(class="fas fa-info-circle text-muted")
 
+											td(class="text-right") #{tx.num_confirmations.toLocaleString()}
+
 											td
 												- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(tx.time_stamp) * 1000))));
 
@@ -126,7 +129,7 @@ block content
 												span  
 													i(class="far fa-clock", title=(moment.utc(new Date(parseInt(tx.time_stamp) * 1000)).format("Y-MM-DD HH:mm:ss") + " utc"), data-toggle="tooltip")
 
-											td
+											td(class="text-right")
 												- var currencyValue = new Decimal(Math.abs(parseInt(tx.amount))).dividedBy(100000000);
 												if (parseInt(tx.amount) > 0)
 													div(class="text-success")

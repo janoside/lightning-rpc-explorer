@@ -248,9 +248,15 @@ footer a:hover {
 }
 
 .header-nav {
-	background-color: #eeeeee;
-	border-radius: 5px;
-	border: solid 1px #dddddd;
+	color: #495057;
+	background-color: #e9ecef;
+	background-color: rgba(0, 0, 0, 0.03);
+	border-color: #dee2e6;
+	border-bottom: solid 1px #dee2e6;
+}
+
+.table-head-with-nav {
+	background-color: rgba(0, 0, 0, 0.03);
 }
 
 .table-striped>tbody>tr:nth-child(odd)>td, 
