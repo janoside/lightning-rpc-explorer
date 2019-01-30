@@ -7,15 +7,32 @@ block content
 	h1(class="h2") Nodes
 	hr
 
-	div(class="card mb-4")
-		div(class="card-body")
-			strong Sort By: 
-			a(href="/nodes?sort=last_update-desc", style=(sort == "last_update-desc" ? "font-weight: bold;" : false)) Last Updated
-			span , 
-			a(href="/nodes?sort=num_channels-desc", style=(sort == "num_channels-desc" ? "font-weight: bold;" : false)) Channel Count
-			span , 
-			a(href="/nodes?sort=channel_capacity-desc", style=(sort == "channel_capacity-desc" ? "font-weight: bold;" : false)) Capacity
+	nav.navbar.navbar-expand-lg.navbar-light.mb-0.header-nav
+		span.navbar-brand
+			span #{fullNetworkDescription.nodes.sortedByLastUpdate.length.toLocaleString()} 
+			if (fullNetworkDescription.nodes.sortedByLastUpdate.length == 1)
+				span Node
+			else
+				span Nodes
 
+		ul.navbar-nav.ml-auto
+			li.nav-item.dropdown
+				a#navbarDropdownMenuLink.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+					span.text-dark Sort: 
+					span.font-weight-bold.text-dark
+						if (sort == "last_update-desc")
+							| Last Update
+						else if (sort == "num_channels-desc")
+							| Channel Count
+						else if (sort == "channel_capacity-desc")
+							| Capacity
+				.dropdown-menu(aria-labelledby='navbarDropdownMenuLink')
+					a.dropdown-item(href="/nodes?sort=last_update-desc") Last Update
+					a.dropdown-item(href="/nodes?sort=num_channels-desc") Channel Count
+					a.dropdown-item(href="/nodes?sort=channel_capacity-desc") Capacity
+
+
+	- var theadClass = "table-head-with-nav";
 	include includes/node-table.pug
 
 

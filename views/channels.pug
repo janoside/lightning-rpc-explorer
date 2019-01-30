@@ -7,14 +7,28 @@ block content
 	h1(class="h2") Channels
 	hr
 
-	div(class="card mb-3")
-		div(class="card-body")
-			strong Sort By: 
-			a(href="/channels?sort=last_update-desc", style=(sort == "last_update-desc" ? "font-weight: bold;" : false)) Last Updated
-			span , 
-			a(href="/channels?sort=capacity-desc", style=(sort == "capacity-desc" ? "font-weight: bold;" : false)) Capacity
+	nav.navbar.navbar-expand-lg.navbar-light.mb-0.header-nav
+		span.navbar-brand
+			span #{fullNetworkDescription.channels.sortedByLastUpdate.length.toLocaleString()} 
+			if (fullNetworkDescription.channels.sortedByLastUpdate.length == 1)
+				span Channel
+			else
+				span Channels
 
+		ul.navbar-nav.ml-auto
+			li.nav-item.dropdown
+				a#navbarDropdownMenuLink.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+					span.text-dark Sort: 
+					span.font-weight-bold.text-dark
+						if (sort == "last_update-desc")
+							| Last Update
+						else if (sort == "capacity-desc")
+							| Capacity
+				.dropdown-menu(aria-labelledby='navbarDropdownMenuLink')
+					a.dropdown-item(href="/channels?sort=last_update-desc") Last Update
+					a.dropdown-item(href="/channels?sort=capacity-desc") Capacity
 
+	- var theadClass = "table-head-with-nav";
 	include includes/channel-table.pug
 
 

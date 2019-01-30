@@ -7,65 +7,72 @@ block content
 	h1(class="h2") Invoices
 	hr
 
-	ul(class='nav nav-tabs mb-3')
-		li(class="nav-item")
-			a(data-toggle="tab", href="#tab-details", class="nav-link active", role="tab") Details
-		li(class="nav-item")
-			a(data-toggle="tab", href="#tab-json", class="nav-link", role="tab") JSON
+	if (!session.admin)
+		p If logged in as an admin, this page will display a list of the invoices / payment requests made by/for this node.
 
-	div(class="tab-content")
-		div(id="tab-details", class="tab-pane active", role="tabpanel")
-			nav.navbar.navbar-expand-lg.navbar-light.mb-0.header-nav
-				span.navbar-brand
-					span #{invoices.invoices.length.toLocaleString()} 
-					if (invoices.invoices.length == 1)
-						span Invoice
-					else
-						span Invoices
+		a(href="/login") Login
 
-			if (true)
-				table(class="table table-responsive-sm")
-					thead(class="table-head-with-nav")
-						tr
-							th
-							th Memo
-							th Created
-							th Settled
-							th(class="text-right") Value
-					
-					tbody
-						each invoice, invoice_index in invoices.invoices
-							tr(class="monospace word-wrap")
-								td #{(invoice_index + 1).toLocaleString()}
+	else
 
-								td
-									if (invoice.memo)
-										span #{invoice.memo}
-									else
-										span -
+		ul(class='nav nav-tabs mb-3')
+			li(class="nav-item")
+				a(data-toggle="tab", href="#tab-details", class="nav-link active", role="tab") Details
+			li(class="nav-item")
+				a(data-toggle="tab", href="#tab-json", class="nav-link", role="tab") JSON
 
-								td
-									- var createdAtTime = parseInt(invoice.creation_date);
-									- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(createdAtTime) * 1000))));
+		div(class="tab-content")
+			div(id="tab-details", class="tab-pane active", role="tabpanel")
+				nav.navbar.navbar-expand-lg.navbar-light.mb-0.header-nav
+					span.navbar-brand
+						span #{invoices.invoices.length.toLocaleString()} 
+						if (invoices.invoices.length == 1)
+							span Invoice
+						else
+							span Invoices
 
-									span(title=(moment.utc(new Date(parseInt(createdAtTime) * 1000)).format("Y-MM-DD HH:mm:ss") + " utc"), data-toggle="tooltip") #{timeAgo.humanize()} ago
+				if (true)
+					table(class="table table-responsive-sm")
+						thead(class="table-head-with-nav")
+							tr
+								th
+								th Memo
+								th Created
+								th Settled
+								th(class="text-right") Value
+						
+						tbody
+							each invoice, invoice_index in invoices.invoices
+								tr(class="monospace word-wrap")
+									td #{(invoice_index + 1).toLocaleString()}
 
-								td
-									if (invoice.settled)
-										- var settleTime = parseInt(invoice.settle_date);
-										- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(settleTime) * 1000))));
+									td
+										if (invoice.memo)
+											span #{invoice.memo}
+										else
+											span -
 
-										span(title=(moment.utc(new Date(parseInt(settleTime) * 1000)).format("Y-MM-DD HH:mm:ss") + " utc"), data-toggle="tooltip") #{timeAgo.humanize()} ago
+									td
+										- var createdAtTime = parseInt(invoice.creation_date);
+										- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(createdAtTime) * 1000))));
 
-									else
-										span(class="text-warning") Unsettled
+										span(title=(moment.utc(new Date(parseInt(createdAtTime) * 1000)).format("Y-MM-DD HH:mm:ss") + " utc"), data-toggle="tooltip") #{timeAgo.humanize()} ago
 
-								td(class="text-right")
-									- var currencyValue = new Decimal(invoice.value).dividedBy(100000000);
-									include ./includes/value-display.pug
-								
+									td
+										if (invoice.settled)
+											- var settleTime = parseInt(invoice.settle_date);
+											- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(settleTime) * 1000))));
 
-		div(id="tab-json", class="tab-pane", role="tabpanel")
-			pre
-				code #{JSON.stringify(invoices, null, 4)}
+											span(title=(moment.utc(new Date(parseInt(settleTime) * 1000)).format("Y-MM-DD HH:mm:ss") + " utc"), data-toggle="tooltip") #{timeAgo.humanize()} ago
+
+										else
+											span(class="text-warning") Unsettled
+
+									td(class="text-right")
+										- var currencyValue = new Decimal(invoice.value).dividedBy(100000000);
+										include ./includes/value-display.pug
+									
+
+			div(id="tab-json", class="tab-pane", role="tabpanel")
+				pre
+					code #{JSON.stringify(invoices, null, 4)}
 
