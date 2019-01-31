@@ -220,6 +220,22 @@ function listPayments() {
 	});
 }
 
+function getNetworkStats() {
+	return new Promise(function(resolve, reject) {
+		lightning.GetNetworkInfo({}, function(err, response) {
+			if (err) {
+				utils.logError("32r9yg4329t655", err);
+
+				reject(err);
+
+				return;
+			}
+
+			resolve(response);
+		});
+	});
+}
+
 function decodeInvoiceString(invoiceStr) {
 	return new Promise(function(resolve, reject) {
 		lightning.DecodePayReq({pay_req:invoiceStr}, function(err, response) {
@@ -313,6 +329,7 @@ module.exports = {
 
 	connectToPeer: connectToPeer,
 	listPayments: listPayments,
+	getNetworkStats: getNetworkStats,
 
 	decodeInvoiceString: decodeInvoiceString,
 	payInvoice: payInvoice,

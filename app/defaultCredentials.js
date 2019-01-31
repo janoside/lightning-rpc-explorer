@@ -3,10 +3,19 @@ module.exports = {
 
 	// modify "rpc" to target your lnd node
 	rpc: {
-		host:"lightning.chaintools.io",
+		host:"127.0.0.1",
 		port:10009,
-		adminMacaroonFilepath: "./credentials/admin.macaroon",
-		tlsCertFilepath: "./credentials/tls.cert"
+		adminMacaroonFilepath: "~/.lnd/admin.macaroon",
+		tlsCertFilepath: "~/.lnd/tls.cert"
+	},
+
+	influxdb:{
+		active:false,
+		host:"127.0.0.1",
+		port:8086,
+		database:"influxdb",
+		username:"admin",
+		password:"admin"
 	},
 
 	adminUsername:"admin",

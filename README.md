@@ -24,66 +24,12 @@ A live demo of the tool is available at https://lightning.chaintools.io
 ## Instructions
 
 1. Clone this repo
-2. `npm install` to install all required dependencies
-3. Optional: Modify the "rpc" section in [env.js](app/env.js) to use non-default settings if needed.
-4. `npm start` to start the local server
-5. Navigate to http://127.0.0.1:3004/
+2. `npm install`
+3. `npm run build`
+4. Optional: Create file [app/credentials.js](app/credentials.js) with values to overwrite those in [app/defaultCredentials.js](app/defaultCredentials.js).
+5. `npm start`
+6. Open [http://127.0.0.1:3004/](http://127.0.0.1:3004/)
 
-# Screenshots
-
-<table>
-  <tr>
-    <td valign="top">
-      <h4>Connect via RPC</h4>
-      <hr/>
-      <img src="public/img/screenshots/connect.png" style="margin-right:5px; border: 1px solid #ccc;" />
-    </td>
-    <td valign="top">
-      <h4>Homepage (list of recent blocks)</h4>
-      <hr/>
-      <img src="public/img/screenshots/home.png" style="margin-right:5px; border: 1px solid #ccc;" />
-    </td>
-    <td valign="top">
-      <h4>Node Details</h4>
-      <hr/>
-      <img src="public/img/screenshots/node-details.png" style="margin-right:5px; border: 1px solid #ccc;" />
-    </td>
-  </tr>
-  <tr>
-    <td valign="top">
-      <h4>Browse Blocks</h4>
-      <hr/>
-      <img src="public/img/screenshots/blocks.png" style="margin-right:5px; border: 1px solid #ccc;" />
-    </td>
-    <td valign="top">
-      <h4>Block Details</h4>
-      <hr/>
-      <img src="public/img/screenshots/block.png" style="margin-right:5px; border: 1px solid #ccc;" />
-    </td>
-    <td valign="top">
-      <h4>Mempool Summary</h4>
-      <hr/>
-      <img src="public/img/screenshots/mempool-summary.png" style="margin-right:5px; border: 1px solid #ccc;" />
-    </td>
-  </tr>
-  <tr>
-    <td valign="top">
-      <h4>Transaction Details</h4>
-      <hr/>
-      <img src="public/img/screenshots/transaction.png" style="margin-right:5px; border: 1px solid #ccc;" />
-    </td>
-    <td valign="top">
-      <h4>Transaction, Raw JSON</h4>
-      <hr/>
-      <img src="public/img/screenshots/transaction-raw.png" style="margin-right:5px; border: 1px solid #ccc;" />
-    </td>
-    <td valign="top">
-      <h4>RPC Browser</h4>
-      <hr/>
-      <img src="public/img/screenshots/rpc-browser.png" style="margin-right:5px; border: 1px solid #ccc;" />
-    </td>
-  </tr>
-</table>
 
 # Donate
 

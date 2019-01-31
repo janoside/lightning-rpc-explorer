@@ -23,6 +23,7 @@ var coins = require("./app/coins.js");
 var request = require("request");
 var qrcode = require("qrcode");
 var rpcApi = require("./app/rpcApi.js");
+var Influx = require("influx");
 
 
 var baseActionsRouter = require('./routes/baseActionsRouter');
@@ -65,6 +66,16 @@ function refreshExchangeRate() {
 					global.exchangeRate = exchangeRate;
 					global.exchangeRateUpdateTime = new Date();
 
+					if (global.influxdb) {
+						global.influxdb.writePoints([{
+							measurement: "exchange_rates.btc_usd",
+							fields:{value:exchangeRate}
+
+						}]).catch(err => {
+							console.error(`Error saving data to InfluxDB: ${err.stack}`)
+						});
+					}
+
 					console.log("Using exchange rate: " + global.exchangeRate + " USD/" + coins[config.coin].name + " starting at " + global.exchangeRateUpdateTime);
 
 				} else {
@@ -81,11 +92,39 @@ function refreshExchangeRate() {
 }
 
 
+function logNetworkStats() {
+	if (global.influxdb) {
+		rpcApi.getNetworkStats().then(function(response) {
+			var vals = [];
+			for (var x in response) {
+				var valX = response[x];
+
+				if (x == "total_network_capacity") {
+					valX = parseInt(valX);
+				}
+
+				vals.push({measurement:("lightning.network." + x), fields:{value:valX}})
+			}
+
+			global.influxdb.writePoints(vals).catch(err => {
+				console.error(`Error saving data to InfluxDB: ${err.stack}`)
+			});
+		});
+	}
+}
+
+
 
 app.runOnStartup = function() {
 	global.config = config;
 	global.coinConfig = coins[config.coin];
 	global.coinConfigs = coins;
+
+	if (config.credentials.influxdb.active) {
+		global.influxdb = new Influx.InfluxDB(config.credentials.influxdb);
+
+		console.log(`Connected to InfluxDB: ${config.credentials.influxdb.host}:${config.credentials.influxdb.port}/${config.credentials.influxdb.database}`);
+	}
 
 	if (config.donationAddresses) {
 		var getDonationAddressQrCode = function(coinId) {
@@ -124,6 +163,8 @@ app.runOnStartup = function() {
 		// refresh periodically
 		setInterval(rpcApi.refreshFullNetworkDescription, 60000);
 		setInterval(rpcApi.refreshLocalChannels, 60000);
+
+		setInterval(logNetworkStats, 5 * 60000);
 	});
 };
 

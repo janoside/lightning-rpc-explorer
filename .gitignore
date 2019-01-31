@@ -58,3 +58,4 @@ typings/
 .env
 
 credentials/*
+app/credentials.js
