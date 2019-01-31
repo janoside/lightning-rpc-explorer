@@ -55,43 +55,6 @@ app.use(session({
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-function refreshExchangeRate() {
-	if (coins[config.coin].exchangeRateData) {
-		request(coins[config.coin].exchangeRateData.jsonUrl, function(error, response, body) {
-			if (!error && response && response.statusCode && response.statusCode == 200) {
-				var responseBody = JSON.parse(body);
-
-				var exchangeRate = coins[config.coin].exchangeRateData.responseBodySelectorFunction(responseBody);
-				if (exchangeRate > 0) {
-					global.exchangeRate = exchangeRate;
-					global.exchangeRateUpdateTime = new Date();
-
-					if (global.influxdb) {
-						global.influxdb.writePoints([{
-							measurement: "exchange_rates.btc_usd",
-							fields:{value:exchangeRate}
-
-						}]).catch(err => {
-							console.error(`Error saving data to InfluxDB: ${err.stack}`)
-						});
-					}
-
-					console.log("Using exchange rate: " + global.exchangeRate + " USD/" + coins[config.coin].name + " starting at " + global.exchangeRateUpdateTime);
-
-				} else {
-					console.log("Unable to get exchange rate data");
-				}
-			} else {
-				console.log("Error:");
-				console.log(error);
-				console.log("Response:");
-				console.log(response);
-			}
-		});
-	}
-}
-
-
 function logNetworkStats() {
 	if (global.influxdb) {
 		rpcApi.getNetworkStats().then(function(response) {
@@ -149,11 +112,11 @@ app.runOnStartup = function() {
 
 
 	if (global.exchangeRate == null) {
-		refreshExchangeRate();
+		utils.refreshExchangeRate();
 	}
 
 	// refresh exchange rate periodically
-	setInterval(refreshExchangeRate, 1800000);
+	setInterval(utils.refreshExchangeRate, 30 * 60000);
 
 	// connect and pull down the current network description
 	connectViaRpc().then(function() {
