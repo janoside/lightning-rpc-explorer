@@ -26,7 +26,7 @@ A live demo of the tool is available at https://lightning.chaintools.io
 1. Clone this repo
 2. `npm install`
 3. `npm run build`
-4. Optional: Create file [app/credentials.js](app/credentials.js) with values to overwrite those in [app/defaultCredentials.js](app/defaultCredentials.js).
+4. Optional: Create file `app/credentials.js` with values to overwrite those in [app/defaultCredentials.js](app/defaultCredentials.js).
 5. `npm start`
 6. Open [http://127.0.0.1:3004/](http://127.0.0.1:3004/)
 
