@@ -56,11 +56,8 @@ block content
 									td
 										- var destinationNodePubkey = payment.path[payment.path.length - 1];
 										- var destNode = fullNetworkDescription.nodeInfoByPubkey[destinationNodePubkey].node;
-										- var node_alias = destNode.alias;
-
-										a(href=("/node/" + destNode.pub_key), title=destNode.pub_key, data-toggle="tooltip") #{destNode.pub_key.substring(0, config.site.pubkeyMaxDisplayLength)}
-										br
-										include ./includes/node-alias-display.pug
+										- var card_node_pubkey = destinationNodePubkey;
+										include ./includes/node-card.pug
 
 									td
 										- var timestampTime = parseInt(payment.creation_date);

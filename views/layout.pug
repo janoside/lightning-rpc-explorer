@@ -89,6 +89,8 @@ html
 										a(class="dropdown-item", href="/login")
 											span  Login
 
+						
+
 						form(method="get", action="/search", class="form-inline")
 							div(class="input-group input-group-sm")
 								input(type="text", class="form-control form-control-sm", name="query", placeholder="pub key, channel id, alias, address", value=(query), style="width: 300px;")
@@ -96,8 +98,25 @@ html
 									button(type="submit", class="btn btn-primary")
 										i(class="fas fa-search")
 
+						li(class="nav-item dropdown")
+							a(class="nav-link dropdown-toggle", href="javascript:void(0)", id="navbarDropdown", role="button", data-toggle="dropdown", aria-haspopup="true", aria-expanded="false") 
+								if (session.admin)
+									i(class="fas fa-user-shield mr-1") 
+									span  Admin
+								else
+									i(class="far fa-user mr-1") 
+									span  Account...
+
+							div(class="dropdown-menu", aria-labelledby="navbarDropdown")
+								if (session.admin)
+									a(class="dropdown-item", href="/logout")
+										span  Logout
+								else
+									a(class="dropdown-item", href="/login")
+										span  Login
+
 		if (true)
-			div(class="container mb-4", style="margin-top: -1.0rem;")
+			div(class="container mb-4 d-lg-block d-none", style="margin-top: -1.0rem;")
 				ul(class="nav")
 					li(class="nav-item")
 						a(href="/node-status", class="nav-link") Node Status
@@ -186,6 +205,8 @@ html
 		script(src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js", integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb", crossorigin="anonymous")
 		script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js", integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm", crossorigin="anonymous")
 		script(defer, src="https://use.fontawesome.com/releases/v5.2.0/js/all.js", integrity="sha384-4oV5EgaV02iISL2ban6c/RmotsABqE4yZxZLcYMAdG7FAPsyHYAPpywE9PJo+Khy", crossorigin="anonymous")
+
+		script(type="text/javascript", src="https://cdn.jsdelivr.net/npm/jdenticon@2.1.1")
 
 		script(src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js")
 		

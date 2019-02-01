@@ -384,6 +384,8 @@ router.get("/search", function(req, res) {
 
 		res.locals.searchResults = {};
 		res.locals.searchResults.nodes = [];
+		res.locals.searchResults.channels = [];
+
 
 		fnd.nodes.sortedByLastUpdate.forEach(function(nodeInfo) {
 			if (nodeInfo.node.alias.toLowerCase().indexOf(query) > -1) {
@@ -403,6 +405,12 @@ router.get("/search", function(req, res) {
 					res.locals.searchResults.nodes.push(nodeInfo);
 				}
 			});
+		});
+
+		fnd.channels.sortedByLastUpdate.forEach(function(channelInfo) {
+			if (channelInfo.channel_id.toLowerCase().indexOf(query) > -1) {
+				res.locals.searchResults.channels.push(channelInfo);
+			}
 		});
 
 		res.render("search");

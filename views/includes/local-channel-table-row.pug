@@ -7,14 +7,12 @@ tr(class="monospace word-wrap")
 		if (channel.initiator)
 			i(class="fas fa-check text-success")
 		else
-			i(class="fas fa-times text-danger")
+			i(class="fas fa-times text-dark")
 
 
 	td
-		a(href=("/node/" + channel.remote_pubkey), title=channel.remote_pubkey, data-toggle="tooltip") #{channel.remote_pubkey.substring(0, config.site.pubkeyMaxDisplayLength)}
-		br
-		- var node_alias = fullNetworkDescription.nodeInfoByPubkey[channel.remote_pubkey].node.alias;
-		include ./node-alias-display.pug
+		- var card_node_pubkey = channel.remote_pubkey;
+		include ./node-card.pug
 
 	td(class="text-right")
 		- var currencyValue = new Decimal(channel.local_balance).dividedBy(100000000);

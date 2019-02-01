@@ -5,9 +5,17 @@ block headContent
 	
 block content
 
-	h1(class="h2") Node
-		br
-		small #{nodeInfo.node.pub_key}
+	h1(class="h2")
+		div(class="clearfix")
+			div(class="float-left mr-3")
+				span Node
+			div(class="float-left mr-3")
+				- var node_pubkey = nodeInfo.node.pub_key;
+				- var node_icon_size = "1.25em";
+				include ./includes/node-icon.pug
+		
+		small(class="monospace word-wrap", style="width: 100%;") #{nodeInfo.node.pub_key}
+
 	hr
 
 	ul(class='nav nav-tabs mb-3')
@@ -48,7 +56,7 @@ block content
 											span #{addressItem.network} #{addressItem.addr}
 											br
 									else
-										span []
+										span -
 
 							div(class="row")
 								div(class="summary-split-table-label") Last Update
@@ -87,7 +95,9 @@ block content
 						h2(class="h6 mb-0") Actions
 					div(class="card-body")
 						if (nodeInfo.node.addresses && nodeInfo.node.addresses.length > 0)
-							a(href=("/connectToPeer?pubKey=" + nodeInfo.node.pub_key + "&address=" + nodeInfo.node.addresses[0].addr), class="btn btn-primary") Connect as Peer
+							a(href=("/connectToPeer?pubKey=" + nodeInfo.node.pub_key + "&address=" + nodeInfo.node.addresses[0].addr), class="btn btn-primary mr-3") Connect as Peer
+						else
+							a(href="javascript:void(0)", class="btn btn-secondary mr-3", title="Unable to connect. No addresses found.", data-toggle="tooltip", disabled) Connect as Peer
 
 			div(class="card mb-3")
 				div(class="card-header")

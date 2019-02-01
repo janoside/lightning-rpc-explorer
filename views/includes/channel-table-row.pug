@@ -3,16 +3,12 @@ tr(class="monospace word-wrap")
 		a(href=("/channel/" + channel.channel_id)) #{channel.channel_id}
 
 	td
-		a(href=("/node/" + channel.node1_pub), title=channel.node1_pub, data-toggle="tooltip") #{channel.node1_pub.substring(0, config.site.pubkeyMaxDisplayLength)}
-		br
-		- var node_alias = fullNetworkDescription.nodeInfoByPubkey[channel.node1_pub].node.alias;
-		include ./node-alias-display.pug
+		- var card_node_pubkey = channel.node1_pub;
+		include ./node-card.pug
 
 	td
-		a(href=("/node/" + channel.node2_pub), title=channel.node2_pub, data-toggle="tooltip") #{channel.node2_pub.substring(0, config.site.pubkeyMaxDisplayLength)}
-		br
-		- var node_alias = fullNetworkDescription.nodeInfoByPubkey[channel.node2_pub].node.alias;
-		include ./node-alias-display.pug
+		- var card_node_pubkey = channel.node2_pub;
+		include ./node-card.pug
 
 	td
 		- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(channel.last_update) * 1000))));

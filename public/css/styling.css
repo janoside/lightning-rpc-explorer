@@ -263,3 +263,32 @@ footer a:hover {
 .table-striped>tbody>tr:nth-child(odd)>th {
 	/*background-color: #fbfbfb;*/
 }
+
+
+
+.node-color-circle-outer {
+	position: relative;
+	width: 4em;
+	height: 4em;
+	background-color: #000000;
+	border-radius: 50%;
+}
+
+.node-color-circle-inner {
+	top: 10%;
+	left: 10%;
+	position: absolute;
+	width: 80%;
+	height: 80%;
+	background-color: #e5e5e5;
+	border-radius: 50%;
+}
+
+.node-icon {
+	top: 10%;
+	left: 10%;
+	position: absolute;
+	width: 80%;
+	height: 80%;
+	border-radius: 50%;
+}
