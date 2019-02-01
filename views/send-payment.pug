@@ -103,10 +103,8 @@ block content
 								div(class="row")
 									div(class="summary-table-label") Destination
 									div(class="summary-table-content monospace")
-										a(href=("/node/" + decodedInvoice.destination), title=decodedInvoice.destination, data-toggle="tooltip") #{decodedInvoice.destination.substring(0, config.site.pubkeyMaxDisplayLength)}
-										br
-										- var node_alias = fullNetworkDescription.nodeInfoByPubkey[decodedInvoice.destination].node.alias;
-										include ./includes/node-alias-display.pug
+										- var card_node_pubkey = decodedInvoice.destination;
+										include ./includes/node-card.pug
 
 						div(id="tab-json", class="tab-pane", role="tabpanel")
 							pre
