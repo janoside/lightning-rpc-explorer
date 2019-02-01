@@ -3,12 +3,8 @@ tr(class="monospace")
 		th #{(index + 1).toLocaleString()}
 
 	td
-		a(href=("/node/" + node.node.pub_key), title=node.node.pub_key, data-toggle="tooltip") #{node.node.pub_key.substring(0, config.site.pubkeyMaxDisplayLength)}
-
-	td
-		- var node_color = node.node.color;
-		- var node_alias = node.node.alias;
-		include ./node-description-display.pug
+		- var card_node_pubkey = node.node.pub_key;
+		include ./node-card.pug
 
 	td
 		if (node.node.addresses && node.node.addresses.length > 0)

@@ -12,7 +12,7 @@ block content
 
 	if (fullNetworkDescription)
 		if (config.demoSite && session.hideHomepageBanner != "true")
-			div(class="alert alert-primary alert-dismissible", role="alert")
+			div(class="alert alert-primary alert-dismissible shadow-sm", role="alert")
 				p
 					strong Lightning Explorer
 					span  is 
@@ -36,7 +36,7 @@ block content
 			- totalCapacity = totalCapacity + parseInt(item.capacity);
 
 
-		div(class="card mb-4")
+		div(class="card mb-4 shadow-sm")
 			div(class="card-header")
 				h2(class="h6 mb-0") Network Summary
 			div(class="card-body")
@@ -56,7 +56,7 @@ block content
 								include ./includes/value-display.pug
 
 
-		div(class="card mb-4")
+		div(class="card mb-4 shadow-sm")
 			div(class="card-header")
 				div(class="row")
 					div(class="col")
@@ -93,7 +93,7 @@ block content
 						- var nodeInfos = fullNetworkDescription.nodes.sortedByTotalCapacity.slice(0, 10);
 						include includes/node-table.pug
 
-		div(class="card mb-4")
+		div(class="card mb-4 shadow-sm")
 			div(class="card-header")
 				div(class="row")
 					div(class="col")

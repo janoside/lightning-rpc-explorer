@@ -147,11 +147,11 @@ html
 				
 		div(class="container")
 			if (userMessage)
-				div(class="alert", class=(userMessageType ? ("alert-"  + userMessageType) : "alert-info"), role="alert")
+				div(class="alert shadow-sm", class=(userMessageType ? ("alert-"  + userMessageType) : "alert-info"), role="alert")
 					span !{userMessage}
 
 			else if (session.userMessage)
-				div(class="alert", class=(session.userMessageType ? ("alert-"  + session.userMessageType) : "alert-info"), role="alert")
+				div(class="alert shadow-sm", class=(session.userMessageType ? ("alert-"  + session.userMessageType) : "alert-info"), role="alert")
 					span !{session.userMessage}
 			
 			block content

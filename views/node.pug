@@ -26,7 +26,7 @@ block content
 
 	div(class="tab-content")
 		div(id="tab-details", class="tab-pane active", role="tabpanel")
-			div(class="card mb-3")
+			div(class="card mb-3 shadow-sm")
 				div(class="card-header")
 					h2(class="h6 mb-0") Summary
 
@@ -90,7 +90,7 @@ block content
 
 
 			if (session.admin)
-				div(class="card mb-3")
+				div(class="card mb-3 shadow-sm")
 					div(class="card-header")
 						h2(class="h6 mb-0") Actions
 					div(class="card-body")
@@ -99,7 +99,7 @@ block content
 						else
 							a(href="javascript:void(0)", class="btn btn-secondary mr-3", title="Unable to connect. No addresses found.", data-toggle="tooltip", disabled) Connect as Peer
 
-			div(class="card mb-3")
+			div(class="card mb-3 shadow-sm")
 				div(class="card-header")
 					h2(class="h6 mb-0")
 						span #{parseInt(nodeInfo.num_channels).toLocaleString()} 

@@ -18,7 +18,7 @@ block content
 
 	div(class="tab-content")
 		div(id="tab-details", class="tab-pane active", role="tabpanel")
-			div(class="card mb-3")
+			div(class="card mb-3 shadow-sm")
 				div(class="card-header")
 					h2(class="h6 mb-0") Summary
 
@@ -52,7 +52,7 @@ block content
 								
 
 
-			div(class="card mb-3")
+			div(class="card mb-3 shadow-sm")
 				div(class="card-header")
 					h2(class="h6 mb-0") Policies
 				div(class="card-body")
@@ -60,7 +60,7 @@ block content
 						thead
 							tr
 								th
-								th Public Key
+								th Node
 								th(class="text-right") Time Lock Delta
 								th(class="text-right") Min HTLC
 								th(class="text-right") Fee Base (msat)
@@ -69,7 +69,8 @@ block content
 							tr(class="monospace")
 								th 1
 								td
-									a(href=("/node/" + channel.node1_pub), title=channel.node1_pub, data-toggle="tooltip") #{channel.node1_pub.substring(0, 20)}
+									- var card_node_pubkey = channel.node1_pub;
+									include ./includes/node-card.pug
 
 								if (channel.node1_policy)
 									td(class="text-right") #{parseInt(channel.node1_policy.time_lock_delta).toLocaleString()}
@@ -84,7 +85,8 @@ block content
 							tr(class="monospace")
 								th 2
 								td
-									a(href=("/node/" + channel.node2_pub), title=channel.node2_pub, data-toggle="tooltip") #{channel.node2_pub.substring(0, 20)}
+									- var card_node_pubkey = channel.node2_pub;
+									include ./includes/node-card.pug
 
 								if (channel.node2_policy)
 									td(class="text-right") #{parseInt(channel.node2_policy.time_lock_delta).toLocaleString()}
@@ -97,7 +99,7 @@ block content
 									td(class="text-right") ?
 									td(class="text-right") ?
 
-			div(class="card mb-3")
+			div(class="card mb-3 shadow-sm")
 				div(class="card-header")
 					h2(class="h6 mb-0") Node Details
 				div(class="card-body")
