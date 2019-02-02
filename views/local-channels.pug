@@ -30,22 +30,23 @@ block content
 							span Channels
 
 				if (true)
-					table(class="table table-responsive-sm")
-						thead(class="table-head-with-nav")
-							tr
-								th
-								th ID
-								th
-									span(title="Whether channel was created by the local node", data-toggle="tooltip") Initiator
-								th Remote Node
-								th(class="text-right") Local Balance
-								th(class="text-right") Remote Balance
-								th(class="text-right") Capacity
-								th Last Update
-						
-						tbody
-							each channel, channel_index in localChannels.channels
-								include ./includes/local-channel-table-row.pug
+					div(class="table-responsive")
+						table(class="table")
+							thead(class="table-head-with-nav")
+								tr
+									th
+									th ID
+									th
+										span(title="Whether channel was created by the local node", data-toggle="tooltip") Initiator
+									th Remote Node
+									th(class="text-right") Local Balance
+									th(class="text-right") Remote Balance
+									th(class="text-right") Capacity
+									th Last Update
+							
+							tbody
+								each channel, channel_index in localChannels.channels
+									include ./includes/local-channel-table-row.pug
 
 			div(id="tab-json", class="tab-pane", role="tabpanel")
 				pre

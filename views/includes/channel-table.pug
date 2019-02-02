@@ -1,12 +1,13 @@
-table(class="table table-responsive-sm")
-	thead(class=theadClass)
-		tr
-			th ID
-			th Node 1
-			th Node 2
-			th Last Update
-			th(class="text-right") Capacity
-	
-	tbody
-		each channel, index in channels
-			include ./channel-table-row.pug
+div(class="table-responsive")
+	table(class="table")
+		thead(class=theadClass)
+			tr
+				th ID
+				th Node 1
+				th Node 2
+				th Last Update
+				th(class="text-right") Capacity
+		
+		tbody
+			each channel, index in channels
+				include ./channel-table-row.pug

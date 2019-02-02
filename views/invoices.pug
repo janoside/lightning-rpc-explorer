@@ -31,45 +31,46 @@ block content
 							span Invoices
 
 				if (true)
-					table(class="table table-responsive-sm")
-						thead(class="table-head-with-nav")
-							tr
-								th
-								th Memo
-								th Created
-								th Settled
-								th(class="text-right") Value
-						
-						tbody
-							each invoice, invoice_index in invoices.invoices
-								tr(class="monospace word-wrap")
-									td #{(invoice_index + 1).toLocaleString()}
+					div(class="table-responsive")
+						table(class="table")
+							thead(class="table-head-with-nav")
+								tr
+									th
+									th Memo
+									th Created
+									th Settled
+									th(class="text-right") Value
+							
+							tbody
+								each invoice, invoice_index in invoices.invoices
+									tr(class="monospace word-wrap")
+										td #{(invoice_index + 1).toLocaleString()}
 
-									td
-										if (invoice.memo)
-											span #{invoice.memo}
-										else
-											span -
+										td(class="table-col-text")
+											if (invoice.memo)
+												span #{invoice.memo}
+											else
+												span -
 
-									td
-										- var createdAtTime = parseInt(invoice.creation_date);
-										- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(createdAtTime) * 1000))));
+										td(class="table-col-time")
+											- var createdAtTime = parseInt(invoice.creation_date);
+											- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(createdAtTime) * 1000))));
 
-										span(title=(moment.utc(new Date(parseInt(createdAtTime) * 1000)).format("Y-MM-DD HH:mm:ss") + " utc"), data-toggle="tooltip") #{timeAgo.humanize()} ago
+											span(title=(moment.utc(new Date(parseInt(createdAtTime) * 1000)).format("Y-MM-DD HH:mm:ss") + " utc"), data-toggle="tooltip") #{timeAgo.humanize()} ago
 
-									td
-										if (invoice.settled)
-											- var settleTime = parseInt(invoice.settle_date);
-											- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(settleTime) * 1000))));
+										td(class="table-col-int")
+											if (invoice.settled)
+												- var settleTime = parseInt(invoice.settle_date);
+												- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(settleTime) * 1000))));
 
-											span(title=(moment.utc(new Date(parseInt(settleTime) * 1000)).format("Y-MM-DD HH:mm:ss") + " utc"), data-toggle="tooltip") #{timeAgo.humanize()} ago
+												span(title=(moment.utc(new Date(parseInt(settleTime) * 1000)).format("Y-MM-DD HH:mm:ss") + " utc"), data-toggle="tooltip") #{timeAgo.humanize()} ago
 
-										else
-											span(class="text-warning") Unsettled
+											else
+												span(class="text-warning") Unsettled
 
-									td(class="text-right")
-										- var currencyValue = new Decimal(invoice.value).dividedBy(100000000);
-										include ./includes/value-display.pug
+										td(class="table-col-currencyvalue text-right")
+											- var currencyValue = new Decimal(invoice.value).dividedBy(100000000);
+											include ./includes/value-display.pug
 									
 
 			div(id="tab-json", class="tab-pane", role="tabpanel")

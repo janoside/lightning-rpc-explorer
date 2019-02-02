@@ -38,32 +38,33 @@ block content
 							else
 								span Unconfirmed Transactions
 
-					table(class="table table-responsive-sm")
-						thead
-							tr
-								th Txid
-								th Amount
-						
-						tbody(class="monospace")
-							each tx, index in onChainTransactions.transactions
-								if (tx.num_confirmations == 0)
-									tr
-										td
-											if (config.blockExplorerUrl)
-												a(href=(config.blockExplorerUrl + "/tx/" + tx.tx_hash), title=tx.tx_hash, data-toggle="tooltip") #{tx.tx_hash.substring(0, config.site.txidMaxDisplayLength)}
-											else
-												span(title=tx.tx_hash, data-toggle="tooltip") #{tx.tx_hash.substring(0, config.site.txidMaxDisplayLength)}
+					div(class="table-responsive")
+						table(class="table")
+							thead
+								tr
+									th Txid
+									th Amount
+							
+							tbody(class="monospace")
+								each tx, index in onChainTransactions.transactions
+									if (tx.num_confirmations == 0)
+										tr
+											td(class="table-col-text")
+												if (config.blockExplorerUrl)
+													a(href=(config.blockExplorerUrl + "/tx/" + tx.tx_hash), title=tx.tx_hash, data-toggle="tooltip") #{tx.tx_hash.substring(0, config.site.txidMaxDisplayLength)}
+												else
+													span(title=tx.tx_hash, data-toggle="tooltip") #{tx.tx_hash.substring(0, config.site.txidMaxDisplayLength)}
 
-										td
-											- var currencyValue = new Decimal(Math.abs(parseInt(tx.amount))).dividedBy(100000000);
-											if (parseInt(tx.amount) > 0)
-												div(class="text-success")
-													span +
-													include ./includes/value-display.pug
-											else
-												div(class="text-danger")
-													span -
-													include ./includes/value-display.pug
+											td(class="table-col-currencyvalue")
+												- var currencyValue = new Decimal(Math.abs(parseInt(tx.amount))).dividedBy(100000000);
+												if (parseInt(tx.amount) > 0)
+													div(class="text-success")
+														span +
+														include ./includes/value-display.pug
+												else
+													div(class="text-danger")
+														span -
+														include ./includes/value-display.pug
 
 				div(class="mb-3")
 					nav.navbar.navbar-expand-lg.navbar-light.mb-0.header-nav
@@ -76,8 +77,8 @@ block content
 							else
 								span Transactions
 
-					div(class="")
-						table(class="table table-responsive-sm")
+					div(class="table-responsive")
+						table(class="table")
 							thead(class="table-head-with-nav")
 								tr
 									th
@@ -93,13 +94,13 @@ block content
 									if (tx.num_confirmations > 0)
 										tr
 											td #{(index + 1).toLocaleString()}
-											td
+											td(class="table-col-text")
 												if (config.blockExplorerUrl)
 													a(href=(config.blockExplorerUrl + "/tx/" + tx.tx_hash), target="_blank", title=tx.tx_hash, data-toggle="tooltip") #{tx.tx_hash.substring(0, config.site.txidMaxDisplayLength)}
 												else
 													span(title=tx.tx_hash, data-toggle="tooltip") #{tx.tx_hash.substring(0, config.site.txidMaxDisplayLength)}
 
-											td
+											td(class="table-col-text")
 												if (config.blockExplorerUrl)
 													each addr, index in tx.dest_addresses
 														a(href=(config.blockExplorerUrl + "/address/" + addr), target="_blank") #{addr}
@@ -109,7 +110,7 @@ block content
 														span #{addr}
 														br
 
-											td(class="text-right")
+											td(class="table-col-int text-right")
 												if (config.blockExplorerUrl)
 													a(href=(config.blockExplorerUrl + "/block-height/" + tx.block_height), target="_blank") #{parseInt(tx.block_height).toLocaleString()}
 													span  
@@ -120,16 +121,16 @@ block content
 													span(title=tx.block_hash, data-toggle="tooltip") 
 														i(class="fas fa-info-circle text-muted")
 
-											td(class="text-right") #{tx.num_confirmations.toLocaleString()}
+											td(class="table-col-int text-right") #{tx.num_confirmations.toLocaleString()}
 
-											td
+											td(class="table-col-time")
 												- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(tx.time_stamp) * 1000))));
 
 												span #{timeAgo.humanize()} ago
 												span  
 													i(class="far fa-clock", title=(moment.utc(new Date(parseInt(tx.time_stamp) * 1000)).format("Y-MM-DD HH:mm:ss") + " utc"), data-toggle="tooltip")
 
-											td(class="text-right")
+											td(class="table-col-currencyvalue text-right")
 												- var currencyValue = new Decimal(Math.abs(parseInt(tx.amount))).dividedBy(100000000);
 												if (parseInt(tx.amount) > 0)
 													div(class="text-success")

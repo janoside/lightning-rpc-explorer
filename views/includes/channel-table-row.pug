@@ -1,5 +1,5 @@
 tr(class="monospace word-wrap")
-	td
+	td(class="table-col-channelid")
 		a(href=("/channel/" + channel.channel_id)) #{channel.channel_id}
 
 	td
@@ -10,11 +10,11 @@ tr(class="monospace word-wrap")
 		- var card_node_pubkey = channel.node2_pub;
 		include ./node-card.pug
 
-	td
+	td(class="table-col-time")
 		- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(channel.last_update) * 1000))));
 
 		span(title=moment.utc(new Date(parseInt(channel.last_update) * 1000)).format("Y-MM-DD HH:mm:ss"), data-toggle="tooltip") #{timeAgo.humanize()}
 
-	td(class="text-right")
+	td(class="table-col-currencyvalue text-right")
 		- var currencyValue = new Decimal(channel.capacity).dividedBy(100000000);
 		include ./value-display.pug

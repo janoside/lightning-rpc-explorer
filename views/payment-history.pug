@@ -31,51 +31,52 @@ block content
 							span Payments
 
 				if (true)
-					table(class="table table-responsive-sm")
-						thead(class="table-head-with-nav")
-							tr
-								th
-								th Hash
-								th Destination
-								th Date
-								th(class="text-right") Hops
-								th(class="text-right") Fee
-								th(class="text-right") Value
-						
-						tbody
-							each payment, index in payments.payments
-								tr(class="monospace word-wrap")
-									td #{(index + 1).toLocaleString()}
-									td
-										span(title=payment.payment_hash, data-toggle="tooltip") #{payment.payment_hash.substring(0, 15)}
-									
-									if (false)
+					div(class="table-responsive")
+						table(class="table")
+							thead(class="table-head-with-nav")
+								tr
+									th
+									th Hash
+									th Destination
+									th Date
+									th(class="text-right") Hops
+									th(class="text-right") Fee
+									th(class="text-right") Value
+							
+							tbody
+								each payment, index in payments.payments
+									tr(class="monospace word-wrap")
+										td #{(index + 1).toLocaleString()}
 										td
-											span(title=payment.payment_preimage, data-toggle="tooltip") #{payment.payment_preimage.substring(0, 15)}
+											span(title=payment.payment_hash, data-toggle="tooltip") #{payment.payment_hash.substring(0, 15)}
+										
+										if (false)
+											td
+												span(title=payment.payment_preimage, data-toggle="tooltip") #{payment.payment_preimage.substring(0, 15)}
 
-									td
-										- var destinationNodePubkey = payment.path[payment.path.length - 1];
-										- var destNode = fullNetworkDescription.nodeInfoByPubkey[destinationNodePubkey].node;
-										- var card_node_pubkey = destinationNodePubkey;
-										include ./includes/node-card.pug
+										td
+											- var destinationNodePubkey = payment.path[payment.path.length - 1];
+											- var destNode = fullNetworkDescription.nodeInfoByPubkey[destinationNodePubkey].node;
+											- var card_node_pubkey = destinationNodePubkey;
+											include ./includes/node-card.pug
 
-									td
-										- var timestampTime = parseInt(payment.creation_date);
-										- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(timestampTime) * 1000))));
+										td(class="table-col-time")
+											- var timestampTime = parseInt(payment.creation_date);
+											- var timeAgo = moment.duration(moment.utc(new Date()).diff(moment.utc(new Date(parseInt(timestampTime) * 1000))));
 
-										span #{timeAgo.humanize()} ago 
-										span(title=(moment.utc(new Date(parseInt(timestampTime) * 1000)).format("Y-MM-DD HH:mm:ss") + " utc"), data-toggle="tooltip")
-											i(class="far fa-clock")
+											span #{timeAgo.humanize()} ago 
+											span(title=(moment.utc(new Date(parseInt(timestampTime) * 1000)).format("Y-MM-DD HH:mm:ss") + " utc"), data-toggle="tooltip")
+												i(class="far fa-clock")
 
-									td(class="text-right") #{payment.path.length.toLocaleString()}
+										td(class="table-col-int text-right") #{payment.path.length.toLocaleString()}
 
-									td(class="text-right")
-										- var currencyValue = new Decimal(payment.fee).dividedBy(100000000);
-										include ./includes/value-display.pug
+										td(class="table-col-currencyvalue text-right")
+											- var currencyValue = new Decimal(payment.fee).dividedBy(100000000);
+											include ./includes/value-display.pug
 
-									td(class="text-right")
-										- var currencyValue = new Decimal(payment.value_msat).dividedBy(100000000).dividedBy(1000);
-										include ./includes/value-display.pug
+										td(class="table-col-currencyvalue text-right")
+											- var currencyValue = new Decimal(payment.value_msat).dividedBy(100000000).dividedBy(1000);
+											include ./includes/value-display.pug
 
 			div(id="tab-json", class="tab-pane", role="tabpanel")
 				pre

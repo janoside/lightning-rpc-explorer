@@ -292,3 +292,10 @@ footer a:hover {
 	height: 80%;
 	border-radius: 50%;
 }
+
+.table-col-channelid { min-width: 150px; }
+.table-col-time { min-width: 100px; }
+.table-col-currencyvalue { min-width: 150px; }
+.table-col-ipaddress { min-width: 150px; }
+.table-col-int { min-width: 100px; }
+.table-col-text { min-width: 200px; }

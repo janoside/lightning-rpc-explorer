@@ -1,12 +1,13 @@
-table(class="table table-responsive-sm mb-5")
-	thead(class=theadClass)
-		tr
-			th Node
-			th Address
-			th Last Update
-			th(class="text-right") Channels
-			th(class="text-right") Capacity
-	
-	tbody
-		each nodeInfo, index in nodeInfos
-			include ./node-table-row.pug
+div(class="table-responsive")
+	table(class="table mb-5")
+		thead(class=theadClass)
+			tr
+				th Node
+				th Address
+				th Last Update
+				th(class="text-right") Channels
+				th(class="text-right") Capacity
+		
+		tbody
+			each nodeInfo, index in nodeInfos
+				include ./node-table-row.pug
