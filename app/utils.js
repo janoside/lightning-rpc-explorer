@@ -84,12 +84,34 @@ function getRandomString(length, chars) {
 
 var formatCurrencyCache = {};
 
-function formatCurrencyAmountWithForcedDecimalPlaces(amount, formatType, forcedDecimalPlaces) {
-	if (formatCurrencyCache[formatType]) {
-		var dec = new Decimal(amount);
-		dec = dec.times(formatCurrencyCache[formatType].multiplier);
+function getCurrencyFormatInfo(formatType) {
+	if (formatCurrencyCache[formatType] == null) {
+		for (var x = 0; x < coins[config.coin].currencyUnits.length; x++) {
+			var currencyUnit = coins[config.coin].currencyUnits[x];
 
-		var decimalPlaces = formatCurrencyCache[formatType].decimalPlaces;
+			for (var y = 0; y < currencyUnit.values.length; y++) {
+				var currencyUnitValue = currencyUnit.values[y];
+
+				if (currencyUnitValue == formatType) {
+					formatCurrencyCache[formatType] = currencyUnit;
+				}
+			}
+		}
+	}
+
+	if (formatCurrencyCache[formatType] != null) {
+		return formatCurrencyCache[formatType];
+	}
+
+	return null;
+}
+
+function formatCurrencyAmountWithForcedDecimalPlaces(amount, formatType, forcedDecimalPlaces) {
+	var formatInfo = getCurrencyFormatInfo(formatType);
+	if (formatInfo != null) {
+		var dec = new Decimal(amount);
+
+		var decimalPlaces = formatInfo.decimalPlaces;
 		if (decimalPlaces == 0 && dec < 1) {
 			decimalPlaces = 5;
 		}
@@ -98,31 +120,16 @@ function formatCurrencyAmountWithForcedDecimalPlaces(amount, formatType, forcedD
 			decimalPlaces = forcedDecimalPlaces;
 		}
 
-		return addThousandsSeparators(dec.toDecimalPlaces(decimalPlaces)) + " " + formatCurrencyCache[formatType].name;
-	}
+		if (formatInfo.type == "native") {
+			dec = dec.times(formatInfo.multiplier);
 
-	for (var x = 0; x < coins[config.coin].currencyUnits.length; x++) {
-		var currencyUnit = coins[config.coin].currencyUnits[x];
+			return addThousandsSeparators(dec.toDecimalPlaces(decimalPlaces)) + " " + formatInfo.name;
 
-		for (var y = 0; y < currencyUnit.values.length; y++) {
-			var currencyUnitValue = currencyUnit.values[y];
+		} else if (formatInfo.type == "exchanged") {
+			if (global.exchangeRates != null && global.exchangeRates[formatInfo.multiplier] != null) {
+				dec = dec.times(global.exchangeRates[formatInfo.multiplier]);
 
-			if (currencyUnitValue == formatType) {
-				formatCurrencyCache[formatType] = currencyUnit;
-
-				var dec = new Decimal(amount);
-				dec = dec.times(currencyUnit.multiplier);
-
-				var decimalPlaces = currencyUnit.decimalPlaces;
-				if (decimalPlaces == 0 && dec < 1) {
-					decimalPlaces = 5;
-				}
-
-				if (forcedDecimalPlaces >= 0) {
-					decimalPlaces = forcedDecimalPlaces;
-				}
-
-				return addThousandsSeparators(dec.toDecimalPlaces(decimalPlaces)) + " " + currencyUnit.name;
+				return formatInfo.symbol + addThousandsSeparators(dec.toDecimalPlaces(decimalPlaces));
 			}
 		}
 	}
@@ -135,7 +142,7 @@ function formatCurrencyAmount(amount, formatType) {
 }
 
 function formatCurrencyAmountInSmallestUnits(amount, forcedDecimalPlaces) {
-	return formatCurrencyAmountWithForcedDecimalPlaces(amount, coins[config.coin].currencyUnits[coins[config.coin].currencyUnits.length - 1].name, forcedDecimalPlaces);
+	return formatCurrencyAmountWithForcedDecimalPlaces(amount, coins[config.coin].baseCurrencyUnit.name, forcedDecimalPlaces);
 }
 
 // ref: https://stackoverflow.com/a/2901298/673828
@@ -146,12 +153,12 @@ function addThousandsSeparators(x) {
 	return parts.join(".");
 }
 
-function formatExchangedCurrency(amount) {
-	if (global.exchangeRate != null) {
+function formatExchangedCurrency(amount, exchangeType) {
+	if (global.exchangeRates != null && global.exchangeRates[exchangeType.toLowerCase()] != null) {
 		var dec = new Decimal(amount);
-		dec = dec.times(global.exchangeRate);
+		dec = dec.times(global.exchangeRates[exchangeType.toLowerCase()]);
 
-		return addThousandsSeparators(dec.toDecimalPlaces(2)) + " " + coins[config.coin].exchangeRateData.exchangedCurrencyName;
+		return "$" + addThousandsSeparators(dec.toDecimalPlaces(2));
 	}
 
 	return "";
@@ -268,18 +275,18 @@ function getBlockTotalFeesFromCoinbaseTxAndBlockHeight(coinbaseTx, blockHeight) 
 	return totalOutput.minus(new Decimal(blockReward));
 }
 
-function refreshExchangeRate() {
+function refreshExchangeRates() {
 	if (coins[config.coin].exchangeRateData) {
 		request(coins[config.coin].exchangeRateData.jsonUrl, function(error, response, body) {
 			if (!error && response && response.statusCode && response.statusCode == 200) {
 				var responseBody = JSON.parse(body);
 
-				var exchangeRate = coins[config.coin].exchangeRateData.responseBodySelectorFunction(responseBody);
-				if (exchangeRate > 0) {
-					global.exchangeRate = exchangeRate;
-					global.exchangeRateUpdateTime = new Date();
+				var exchangeRates = coins[config.coin].exchangeRateData.responseBodySelectorFunction(responseBody);
+				if (exchangeRates != null) {
+					global.exchangeRates = exchangeRates;
+					global.exchangeRatesUpdateTime = new Date();
 
-					console.log("Using exchange rate: " + global.exchangeRate + " USD/" + coins[config.coin].name + " starting at " + global.exchangeRateUpdateTime);
+					console.log("Using exchange rates: " + JSON.stringify(global.exchangeRates) + " starting at " + global.exchangeRatesUpdateTime);
 
 				} else {
 					console.log("Unable to get exchange rate data");
@@ -471,6 +478,7 @@ module.exports = {
 	hex2ascii: hex2ascii,
 	splitArrayIntoChunks: splitArrayIntoChunks,
 	getRandomString: getRandomString,
+	getCurrencyFormatInfo: getCurrencyFormatInfo,
 	formatCurrencyAmount: formatCurrencyAmount,
 	formatCurrencyAmountWithForcedDecimalPlaces: formatCurrencyAmountWithForcedDecimalPlaces,
 	formatExchangedCurrency: formatExchangedCurrency,
@@ -481,7 +489,7 @@ module.exports = {
 	logMemoryUsage: logMemoryUsage,
 	getMinerFromCoinbaseTx: getMinerFromCoinbaseTx,
 	getBlockTotalFeesFromCoinbaseTxAndBlockHeight: getBlockTotalFeesFromCoinbaseTxAndBlockHeight,
-	refreshExchangeRate: refreshExchangeRate,
+	refreshExchangeRates: refreshExchangeRates,
 	parseExponentStringDouble: parseExponentStringDouble,
 	formatLargeNumber: formatLargeNumber,
 	geoLocateIpAddresses: geoLocateIpAddresses,

@@ -1,28 +1,63 @@
 var Decimal = require("decimal.js");
 Decimal8 = Decimal.clone({ precision:8, rounding:8 });
 
+var currencyUnits = [
+	{
+		type:"native",
+		name:"LTC",
+		multiplier:1,
+		default:true,
+		values:["", "ltc", "LTC"],
+		decimalPlaces:8
+	},
+	{
+		type:"native",
+		name:"lite",
+		multiplier:1000,
+		values:["lite"],
+		decimalPlaces:5
+	},
+	{
+		type:"native",
+		name:"photon",
+		multiplier:1000000,
+		values:["photon"],
+		decimalPlaces:2
+	},
+	{
+		type:"native",
+		name:"litoshi",
+		multiplier:100000000,
+		values:["litoshi", "lit"],
+		decimalPlaces:0
+	},
+	{
+		type:"exchanged",
+		name:"USD",
+		multiplier:"usd",
+		values:["usd"],
+		decimalPlaces:2,
+		symbol:"$"
+	},
+];
+
 module.exports = {
 	name:"Litecoin",
+	ticker:"LTC",
 	logoUrl:"/img/logo/ltc.svg",
 	siteTitle:"Litecoin Explorer",
 	nodeTitle:"Litecoin Full Node",
 	nodeUrl:"https://litecoin.org/",
 	demoSiteUrl: "https://ltc.chaintools.io",
-	currencyUnits:[
-		{
-			name:"LTC",
-			multiplier:1,
-			default:true,
-			values:["", "ltc", "LTC"],
-			decimalPlaces:8
-		},
-		{
-			name:"mLTC",
-			multiplier:1000,
-			values:["mltc"],
-			decimalPlaces:5
-		}
+	miningPoolsConfigUrls:[
+		"https://raw.githubusercontent.com/hashstream/pools/master/pools.json",
 	],
+	maxBlockWeight: 4000000,
+	currencyUnits:currencyUnits,
+	currencyUnitsByName:{"LTC":currencyUnits[0], "lite":currencyUnits[1], "photon":currencyUnits[2], "litoshi":currencyUnits[3]},
+	baseCurrencyUnit:currencyUnits[3],
+	defaultCurrencyUnit:currencyUnits[0],
+	feeSatoshiPerByteBucketMaxima: [5, 10, 25, 50, 100, 150, 200, 250],
 	genesisBlockHash: "12a765e31ffd4059bada1e25190f6e98c99d9714d334efa41a195a7e7e04bfe2",
 	genesisCoinbaseTransactionId: "97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9",
 	genesisCoinbaseTransaction: {
@@ -59,28 +94,37 @@ module.exports = {
 			}
 		]
 	},
-	specialBlocks:{
-		"12a765e31ffd4059bada1e25190f6e98c99d9714d334efa41a195a7e7e04bfe2":{
-			"noteTitle":"Litecoin Genesis Block",
-			"noteBodyHtml":"This is the first block in the Litecoin blockchain."
-		}
-	},
-	specialTransactions:{
-	},
 	historicalData: [
 		{
-			type: "block",
+			type: "blockheight",
 			date: "2011-10-07",
+			blockHeight: 0,
 			blockHash: "12a765e31ffd4059bada1e25190f6e98c99d9714d334efa41a195a7e7e04bfe2",
-			note: "The Litecoin genesis block.",
+			summary: "The Litecoin genesis block.",
+			alertBodyHtml: "This is the first block in the Litecoin blockchain.",
 			referenceUrl: "https://medium.com/@SatoshiLite/satoshilite-1e2dad89a017"
 		},
 		{
 			type: "tx",
 			date: "2017-05-10",
 			txid: "ce385e55fb2a73fa438426145b074f08314812fa3396472dc572b3079e26e0f9",
-			note: "First SegWit transaction.",
+			summary: "First SegWit transaction.",
 			referenceUrl: "https://twitter.com/satoshilite/status/862345830082138113"
+		},
+		{
+			type: "blockheight",
+			date: "2011-10-13",
+			blockHeight: 448,
+			blockHash: "6995d69ce2cb7768ef27f55e02dd1772d452deb44e1716bb1dd9c29409edf252",
+			summary: "The first block containing a (non-coinbase) transaction.",
+			referenceUrl: ""
+		},
+		{
+			type: "link",
+			date: "2016-05-02",
+			url: "/rpc-browser?method=verifymessage&args%5B0%5D=Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2&args%5B1%5D=G7W57QZ1jevRhBp7SajpcUgJiGs998R4AdBjcIgJq5BOECh4jHNatZKCFLQeo9PvZLf60ykR32XjT4IrUi9PtCU%3D&args%5B2%5D=I%2C+Charlie+Lee%2C+am+the+creator+of+Litecoin&execute=Execute",
+			summary: "Litecoin's Proof-of-Creator",
+			referenceUrl: "https://medium.com/@SatoshiLite/satoshilite-1e2dad89a017"
 		}
 	],
 	exchangeRateData:{
@@ -88,10 +132,10 @@ module.exports = {
 		exchangedCurrencyName:"usd",
 		responseBodySelectorFunction:function(responseBody) {
 			if (responseBody[0] && responseBody[0].price_usd) {
-				return responseBody[0].price_usd;
+				return {"usd":responseBody[0].price_usd};
 			}
 			
-			return -1;
+			return null;
 		}
 	},
 	blockRewardFunction:function(blockHeight) {

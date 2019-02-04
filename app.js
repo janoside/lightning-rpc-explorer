@@ -111,12 +111,12 @@ app.runOnStartup = function() {
 	}
 
 
-	if (global.exchangeRate == null) {
-		utils.refreshExchangeRate();
+	if (global.exchangeRates == null) {
+		utils.refreshExchangeRates();
 	}
 
 	// refresh exchange rate periodically
-	setInterval(utils.refreshExchangeRate, 30 * 60000);
+	setInterval(utils.refreshExchangeRates, 30 * 60000);
 
 	// connect and pull down the current network description
 	connectViaRpc().then(function() {
