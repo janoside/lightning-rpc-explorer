@@ -1,3 +1,7 @@
+# Deprecation Notice
+
+This project is deprecated. Consider [LND Admin](https://github.com/janoside/lnd-admin) or [RTL](https://github.com/Ride-The-Lightning/RTL) as a replacement.
+
 # Lightning RPC Explorer
 
 Simple, database-free Lightning network explorer, via gRPC. Built with Node.js, express, bootstrap-v4.
